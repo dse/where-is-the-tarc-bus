@@ -1,0 +1,66 @@
+html {
+	margin: 0; padding: 0; height: 100%;
+}
+body {
+	margin: 0; padding: 0; height: 100%;
+	position: relative;
+	font-family: "Arial", "Helvetica", sans-serif;
+	font-size: 12px;
+}
+
+.box {
+	background: white;
+	padding: 3px;
+	border: 1px solid black;
+	box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.mapContainer {
+	position: absolute;
+	top: 0; bottom: 0; left: 0; right: 0; z-index: 100;
+}
+
+.extraControls {
+	position: absolute;
+	top: 0.5em;
+	left: 0.5em;
+	z-index: 200;
+}
+.extraControls p {
+	margin: 0.25em 0 0 0;
+}
+
+.legend {
+	position: absolute; bottom: 2em; right: 0.5em; z-index: 200;
+}
+.legend table {
+	border: 0; border-spacing: 0;
+}
+.legend table > * > tr > * {
+	padding: 1px 0 1px 4px;
+	vertical-align: baseline;
+}
+.legend table > * > tr > td:first-child {
+	text-align: center;
+	padding-left: 0;
+	vertical-align: middle;
+}
+
+.closeLink {
+	position: absolute;
+	top: 0;
+	right: 0;
+	font-size: 200%;
+	line-height: 80%;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+/* Info Windows */
+.gm-style-iw p {
+	margin: 0 0 0.5em 0;
+}
+.gm-style-iw pre.data {
+	height: 8em;
+	overflow: auto;
+}
