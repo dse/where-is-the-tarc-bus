@@ -2,8 +2,14 @@
 	$agencyid
 </%args>
 <%once>
+	use lib "/home/dse/git/KNOWN_WORKING/HTTP-Cache-Transparent/lib";
+	use lib "/home/dse/git/KNOWN_WORKING/JSON-Encoder-Compact/lib";
+	use lib "/home/dse/git/KNOWN_WORKING/geo-gtfs-modules-2/Geo-GTFS2/lib";
+
 	use lib "/Users/dse/git/HTTP-Cache-Transparent/lib";
+	use lib "/Users/dse/git/JSON-Encoder-Compact/lib";
 	use lib "/Users/dse/git/geo-gtfs-modules-2/Geo-GTFS2/lib";
+
 	use Geo::GTFS2;
 	use JSON qw(encode_json);
 </%once>
