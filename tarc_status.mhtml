@@ -1,0 +1,69 @@
+<%args>
+	$agencyid
+</%args>
+<%once>
+	use lib "/Users/dse/git/HTTP-Cache-Transparent/lib";
+	use lib "/Users/dse/git/geo-gtfs-modules-2/Geo-GTFS2/lib";
+	use Geo::GTFS2;
+</%once>
+<%perl>
+	my $gtfs2 = Geo::GTFS2->new();
+	$gtfs2->set_agency_id($agencyid);
+	my $data = $gtfs2->get_vehicle_feed();
+	$r->content_type("text/html");
+
+	my @records = @{$data->{vehicle}};
+
+</%perl>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		How is TARC Doing?
+	</title>
+	<link rel="stylesheet" href="details.css" />
+</head>
+<body>
+	<h1>How is TARC Doing?</h1>
+	<table class="tarc_status">
+	<thead>
+	<tr>
+		<th rowspan="2" class="vehicle">Vehicle</th>
+		<th rowspan="2" class="route">Route</th>
+		<th rowspan="2" class="trip_headsign">Destination</th>
+		<th colspan="3">Next Stop</th>
+	</tr>
+	<tr>
+			<th>	<i>Expected</i> Time	</th>
+			<th>	Delay			</th>
+			<th>	Location		</th>
+	</tr>
+	</thead>
+	<tbody>
+% my $prev_route;
+% foreach my $r (grep { !$_->{_exclude_} } @{$data->{vehicle}}) {
+%	my $route = $r->{route_short_name};
+%	if (defined $prev_route && $route ne $prev_route) {
+	</tbody>
+	<tbody>
+%	}
+%	$prev_route = $route;
+%	my $url = "./trip_details.mhtml?agencyid=$agencyid&tripid=$r->{trip_id}";
+%	my $ns = $r->{next_stop};
+	<tr>
+		<td class="label"><a href="<% $url |h %>"><% $r->{label} |h %></a></td>
+		<td class="route_short_name"><a href="<% $url |h %>"><% $r->{route_short_name} |h %></a></td>
+		<td class="trip_headsign"><a href="<% $url |h %>"><% $r->{trip_headsign} |h %></a></td>
+%		if ($ns) {
+			<td class="time"          ><% $ns->{time_hh_mm_ss} |h %></td>
+			<td class="delay"         ><% $ns->{delay_minutes} |h %></td>
+			<td class="stop_name"     ><% $ns->{stop_name} |h %></td>
+%		} else {
+			<td colspan="4"></td>
+%		}
+	</tr>
+% }
+	</tbody>
+	</table>
+</body>
+</html>

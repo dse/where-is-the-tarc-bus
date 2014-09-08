@@ -1,0 +1,9 @@
+PerlModule Apache2::Reload
+PerlInitHandler Apache2::Reload
+
+PerlModule HTML::Mason::ApacheHandler
+<FilesMatch "(\.mhtml)$">
+	PerlSetVar MasonCompRoot /Users/dse/Sites
+	SetHandler perl-script
+	PerlHandler HTML::Mason::ApacheHandler
+</FilesMatch>

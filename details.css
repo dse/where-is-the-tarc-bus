@@ -1,0 +1,47 @@
+html {
+}
+body {
+    font-size: 75%;
+}
+
+table {
+    max-width: 40em;
+    margin: 0 auto;
+    border-bottom: 2px solid black;
+    border-right: 2px solid black;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    empty-cells: show;
+    border-spacing: 0;
+}
+table > tbody > tr.expected-next-stop > td {
+    background-color: yellow;
+}
+table > tbody > tr.expected-to-have-been-passed > td {
+    background-color: #f7f7f7;
+    color: #aaa;
+}
+
+table > tbody > * > td.delay          { text-align: center; width: 1%; }
+table > tbody > * > td.time           { text-align: center; width: 1%; }
+table > tbody > * > td.scheduled_time { text-align: center; width: 1%; }
+table > tbody > * > td.stop_sequence  { text-align: center; width: 1%; }
+
+table > * > * > th {
+    vertical-align: bottom;
+    padding: 0.1em 0.25em;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+}
+table > * > * > td {
+    vertical-align: baseline;
+    padding: 0.1em 0.25em;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+}
+table > tbody > tr:first-child > * { border-top-width: 2px; }
+
+table > * > * > td.route_short_name + td.trip_headsign { border-left-width: 0; }
+table > * > * > td.route_short_name { text-align: right; }
+
+h1 { text-align: center; }

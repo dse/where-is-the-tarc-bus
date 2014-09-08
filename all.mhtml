@@ -1,0 +1,47 @@
+<%args>
+	$stage => 9999
+	$pretty => 0
+	$limit_stop_time_updates => 0
+</%args>
+<%once>
+	use lib "/Users/dse/git/HTTP-Cache-Transparent/lib";
+	use lib "/Users/dse/git/JSON-Encoder-Compact/lib";
+	use lib "/Users/dse/git/geo-gtfs-modules-2/Geo-GTFS2/lib";
+	use Geo::GTFS2;
+	use JSON;
+	use JSON::Encoder::Compact;
+</%once>
+<%perl>
+	my $gtfs2 = Geo::GTFS2->new();
+
+	my $o = $gtfs2->realtime_status_data(
+		"ridetarc.org",
+		stage => $stage,
+		limit_stop_time_updates => $limit_stop_time_updates
+	);
+	
+	my $json;
+	if ($pretty) {
+		$json = JSON::Encoder::Compact->new(
+			compactness => 2,
+			extra_compact => {
+				"stop_time_update[]" => 1,
+			},
+			own_line => {
+				"stop_time_update[]" => 1,
+			},
+			no_break => {
+				"start_date,start_time" => 1,
+				"latitude,longitude" => 1,
+			},
+			no_show => {
+				_consolidate_ => 1,
+			},
+		);
+	} else {
+		$json = JSON->new()->allow_nonref()->convert_blessed();
+	}
+
+	my $encoded_data = $json->encode($o);
+	print $encoded_data;
+</%perl>

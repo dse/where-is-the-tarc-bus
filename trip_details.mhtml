@@ -1,0 +1,71 @@
+<%args>
+	$agencyid
+	$tripid
+</%args>
+<%once>
+	use lib "/Users/dse/git/HTTP-Cache-Transparent/lib";
+	use lib "/Users/dse/git/geo-gtfs-modules-2/Geo-GTFS2/lib";
+	use Geo::GTFS2;
+	use JSON qw(encode_json);
+</%once>
+<%perl>
+	my $gtfs2 = Geo::GTFS2->new();
+	$gtfs2->set_agency_id($agencyid);
+	my $data = $gtfs2->get_trip_details_feed($tripid);
+	$r->content_type("text/html");
+</%perl>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+%	foreach my $tu (@{$data->{trip_update}}) {
+		<% $tu->{route_short_name} |h %>
+		to
+		<% $tu->{trip_headsign} |h %>
+%		last;
+%	}
+	</title>
+	<link rel="stylesheet" href="details.css" />
+</head>
+<body>
+% foreach my $tu (@{$data->{trip_update}}) {
+	<div class="trip_update">
+	<h1>
+		<% $tu->{route_short_name} |h %>
+		<% $tu->{route_long_name} |h %>
+		<br />
+		to
+		<% $tu->{trip_headsign} |h %>
+	</h1>
+	<table class="trip_details">
+	<thead>
+		<tr>
+			<th>	Stop Seq.		</th>
+			<th>	<i>Expected</i> Time	</th>
+			<th>	Delay			</th>
+			<th>	Location		</th>
+			<th>	<i>Scheduled</i> Time	</th>
+		</tr>
+	</thead>
+	<tbody>
+%	foreach my $stu (@{$tu->{stop_time_update}}) {
+%	    if ($stu->{expected_next_stop}) {
+		<tr class="expected-next-stop">
+%	    } elsif ($stu->{expected_to_have_been_passed}) {
+		<tr class="expected-to-have-been-passed">
+%	    } else {
+		<tr>
+%	    }
+			<td class="stop_sequence" ><% $stu->{stop_sequence} |h %></td>
+			<td class="time"          ><% $stu->{time_hh_mm_ss} |h %></td>
+			<td class="delay"         ><% $stu->{delay_minutes} |h %></td>
+			<td class="stop_name"     ><% $stu->{stop_name} |h %></td>
+			<td class="scheduled_time"><% $stu->{scheduled_time} |h %></td>
+		</tr>
+%	}
+	</tbody>
+	</table>
+	</div>
+% }
+</body>
+</html>

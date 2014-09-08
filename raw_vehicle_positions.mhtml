@@ -1,0 +1,15 @@
+<%args>
+	$agencyid
+</%args>
+<%once>
+	use lib "/Users/dse/git/HTTP-Cache-Transparent/lib";
+	use lib "/Users/dse/git/geo-gtfs-modules-2/Geo-GTFS2/lib";
+	use Geo::GTFS2;
+	use JSON qw(encode_json);
+</%once>
+<%perl>
+	my $gtfs2 = Geo::GTFS2->new();
+	$gtfs2->set_agency_id($agencyid);
+	my $o = $gtfs2->fetch_realtime_vehicle_position_feed();
+	print $gtfs2->json->encode($o);
+</%perl>

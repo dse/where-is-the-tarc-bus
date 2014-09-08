@@ -1,0 +1,25 @@
+<%once>
+	use lib "/Users/dse/git/HTTP-Cache-Transparent/lib";
+	use lib "/Users/dse/git/geo-gtfs-modules-2/Geo-GTFS2/lib";
+	use Geo::GTFS2;
+	use JSON qw(encode_json);
+</%once>
+<%perl>
+	my $gtfs2 = Geo::GTFS2->new();
+	my @agencies = $gtfs2->get_agencies();
+	$r->content_type("text/html");
+</%perl>
+<html>
+<body>
+<h1>Agencies</h1>
+<ul>
+% foreach my $agency (@agencies) {
+    <li>
+        <a href="./feeds.mhtml?agencyid=<% $agency->{id} |u %>">
+	    <% $agency->{name} |h %>
+	</a>
+    </li>
+% }
+</ul>
+</body>
+</html>

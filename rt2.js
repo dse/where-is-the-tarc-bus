@@ -103,14 +103,9 @@ jQuery(function($) {
 				"mapTypeIds": [ google.maps.MapTypeId.HYBRID,
 								google.maps.MapTypeId.ROADMAP,
 								google.maps.MapTypeId.SATELLITE,
-								google.maps.MapTypeId.TERRAIN ],
-				"style": google.maps.MapTypeControlStyle.HORIZONTAL_BAR // DROPDOWN_MENU, HORIZONTAL_BAR, or DEFAULT
-			},
-			"scaleControl": true,
-			"overviewMapControl": false,
-			"panControl": false,
-			"streetViewControl": false,
-			"zoomControl": false
+								google.maps.MapTypeId.TERRAIN ]
+				//"style": google.maps.MapTypeControlStyle.HORIZONTAL_BAR // DROPDOWN_MENU, HORIZONTAL_BAR, or DEFAULT
+			}
 		};
 
 		mapCanvas = $(".mapContainer").get(0);
