@@ -1,6 +1,3 @@
-PerlModule Apache2::Reload
-PerlInitHandler Apache2::Reload
-
 PerlModule HTML::Mason::ApacheHandler
 
 <FilesMatch "(\.mhtml)$">
