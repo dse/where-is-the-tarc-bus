@@ -224,16 +224,17 @@ Object.extend(WhereIsMyBus.prototype, {
 	},
 	getColorScheme: function(vehicle) {
 		console.log(vehicle);
+		var express = /\bexpress\b/i.test(vehicle.trip_headsign);
 		if (vehicle.route_id == "94" || vehicle.route_id == "95") {
 			return "white-on-red";
 		}
 		if (/^13[56789]\d$/.test(vehicle.label)) {
-			return "white-on-blue";
+			return express ? "blue-on-white" : "white-on-blue";
 		}
 		if (/^14\d\d$/.test(vehicle.label)) {
-			return "white-on-blue";
+			return express ? "blue-on-white" : "white-on-blue";
 		}
-		return "white-on-black";
+		return express ? "black-on-yellow" : "white-on-black";
 	},
 	showTransitLayer: function(bool) {
 		if (bool === undefined || bool === null) { bool = true; }
