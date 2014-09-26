@@ -232,7 +232,7 @@ Object.extend(WhereIsMyBus.prototype, {
 			return express ? "blue-on-white" : "white-on-blue";
 		}
 		if (/^14\d\d$/.test(vehicle.label)) {
-			return express ? "blue-on-white" : "white-on-blue";
+			return express ? "blue-on-white" : "blue-on-black";
 		}
 		return express ? "black-on-yellow" : "white-on-black";
 	},
