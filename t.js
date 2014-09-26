@@ -223,14 +223,15 @@ Object.extend(WhereIsMyBus.prototype, {
 		return imageURL;
 	},
 	getColorScheme: function(vehicle) {
-		if (vehicle.route_id == "94") {
-			return "white-on-black";
+		console.log(vehicle);
+		if (vehicle.route_id == "94" || vehicle.route_id == "95") {
+			return "white-on-red";
 		}
 		if (/^13[56789]\d$/.test(vehicle.label)) {
 			return "white-on-blue";
 		}
 		if (/^14\d\d$/.test(vehicle.label)) {
-			return "white-on-red";
+			return "white-on-blue";
 		}
 		return "white-on-black";
 	},
