@@ -227,10 +227,10 @@ Object.extend(WhereIsMyBus.prototype, {
 			return "white-on-black";
 		}
 		if (/^13[56789]\d$/.test(vehicle.label)) {
-			return "white-on-orange";
+			return "white-on-blue";
 		}
 		if (/^14\d\d$/.test(vehicle.label)) {
-			return "white-on-blue";
+			return "white-on-red";
 		}
 		return "white-on-black";
 	},
