@@ -14,6 +14,7 @@
 	use JSON qw(encode_json);
 </%once>
 <%perl>
+	$r->content_type("text/plain");
 	my $gtfs2 = Geo::GTFS2->new();
 	$gtfs2->set_agency_id($agencyid);
 	my $o = $gtfs2->get_vehicle_feed();
