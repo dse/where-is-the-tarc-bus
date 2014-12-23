@@ -19,6 +19,9 @@ var GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/maps/api/js?key={API_KEY}
 GOOGLE_MAPS_API_URL = GOOGLE_MAPS_API_URL.replace(/\{API_KEY\}/, encodeURIComponent(GOOGLE_MAPS_API_KEY));
 GOOGLE_MAPS_API_URL = GOOGLE_MAPS_API_URL.replace(/\{SENSOR\}/, encodeURIComponent(String(GOOGLE_MAPS_USE_SENSOR)));
 
+var BUSFAN_MODE = /\bbusfan\b/.test(location.search);
+var TEXT_MARKER_MODE = /\btextmarker\b/.test(location.search);
+
 function WhereIsMyBus() {
 	this.init();
 }
@@ -147,28 +150,51 @@ Object.extend(WhereIsMyBus.prototype, {
 			}
 		} else {
 			if (!this.markers[label]) {
-				this.markers[label] = new google.maps.Marker({
-					clickable: true,
-					flat: true,
-					map: this.mainMap,
-					optimized: false, // eh?
-					visible: true
-				});
+				if (TEXT_MARKER_MODE) {
+					this.markers[label] = new MarkerWithLabel({
+						clickable: true,
+						flat: true,
+						map: this.mainMap,
+						optimized: false, // eh?
+						visible: true
+					});
+				} else {
+					this.markers[label] = new google.maps.Marker({
+						clickable: true,
+						flat: true,
+						map: this.mainMap,
+						optimized: false, // eh?
+						visible: true
+					});
+				}
 				google.maps.event.addListener(this.markers[label], 
 											  "click", function() {
 												  console.log("click event");
 												  that.markerClick(that.vehicles[label]);
 											  });
 			}
-			this.markers[label].setOptions({
-				position: new google.maps.LatLng(latitude, longitude),
-				icon: {
-					url: this.getImageURL(vehicle),
-					size: new google.maps.Size(15, 15),
-					anchor: new google.maps.Point(7, 7)
-				},
-				title: this.markerTitle(vehicle)
-			});
+			if (TEXT_MARKER_MODE) {
+				this.markers[label].setOptions({
+					position: new google.maps.LatLng(latitude, longitude),
+					labelContent: vehicle.route_id,
+					labelClass: "textMarker",
+					labelAnchor: new google.maps.Point(10, 10), /* [A] see t.css */
+					title: this.markerTitle(vehicle),
+					icon: {
+						url: "about:blank"
+					}
+				});
+			} else {
+				this.markers[label].setOptions({
+					position: new google.maps.LatLng(latitude, longitude),
+					icon: {
+						url: this.getImageURL(vehicle),
+						size: new google.maps.Size(15, 15),
+						anchor: new google.maps.Point(7, 7)
+					},
+					title: this.markerTitle(vehicle)
+				});
+			}
 			if (this.infoWindowLabel === label && this.infoWindow) {
 				this.infoWindow.setOptions({
 					content: this.infoWindowContent(vehicle)
@@ -204,14 +230,14 @@ Object.extend(WhereIsMyBus.prototype, {
 	},
 	infoWindowContent: function(vehicle) {
 		var content = "";
-		content += "<h1 style='margin-top: 0;'>" + vehicle.route_short_name + " to " + vehicle.trip_headsign + "</h1>\n";
-		content += "<p>Bus " + vehicle.label + ".</p>";
+		content += "<h1 style='margin: 0 0 0.25em 0; font-weight: bold; font-size: 100%;'>" + vehicle.route_short_name + " to " + vehicle.trip_headsign + "</h1>\n";
+		content += "<p style='margin: 0.25em 0;'>Bus " + vehicle.label + ".</p>";
 		if (vehicle.next_stop && vehicle.next_stop.delay_minutes) {
-			content += "<p>Approx. " + vehicle.next_stop.delay_minutes + " minutes late.</p>";
+			content += "<p style='margin: 0.25em 0;'>Approx. " + vehicle.next_stop.delay_minutes + " minutes late.</p>";
 		} else {
-			content += "<p>On time.</p>";
+			content += "<p style='margin: 0.25em 0;'>On time.</p>";
 		}
-		content += "<p><a href='%s' target='_blank'>Trip Details</a>\n".replace(/%s/, this.tripDetailsURL(vehicle));
+		content += "<p style='margin: 0.25em 0 0 0;'><a href='%s' target='_blank'>Trip Details</a>\n".replace(/%s/, this.tripDetailsURL(vehicle));
 		content += "   | <a href='%s' target='_blank'>Trip Data</a></p>\n".replace(/%s/, this.tripDetailsDataURL(vehicle));
 
 		return content;
@@ -225,14 +251,16 @@ Object.extend(WhereIsMyBus.prototype, {
 	getColorScheme: function(vehicle) {
 		console.log(vehicle);
 		var express = /\bexpress\b/i.test(vehicle.trip_headsign);
-		if (vehicle.route_id == "94" || vehicle.route_id == "95") {
+		if (vehicle.route_id == "94" || vehicle.route_id == "95" || vehicle.route_id == "90") {
 			return "white-on-red";
 		}
-		if (/^13[56789]\d$/.test(vehicle.label)) {
-			return express ? "blue-on-white" : "white-on-blue";
-		}
-		if (/^14\d\d$/.test(vehicle.label)) {
-			return express ? "blue-on-white" : "yellow-on-black";
+		if (BUSFAN_MODE) {
+			if (/^13[56789]\d$/.test(vehicle.label)) {
+				return express ? "blue-on-white" : "white-on-blue";
+			}
+			if (/^14\d\d$/.test(vehicle.label)) {
+				return express ? "blue-on-white" : "white-on-blue";
+			}
 		}
 		return express ? "black-on-yellow" : "white-on-black";
 	},
