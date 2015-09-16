@@ -86,10 +86,8 @@ Object.extend(WhereIsMyBus.prototype, {
 			this.mainMap.setCenter(new google.maps.LatLng(position.coords.latitude,
 														  position.coords.longitude));
 			if (this.cookies.zoom !== undefined) {
-				console.log("zoom from cookie " + this.cookies.zoom);
 				this.mainMap.setZoom(Number(this.cookies.zoom));
 			} else {
-				console.log("default zoom for gps");
 				this.mainMap.setZoom(DEFAULT_GPS_ZOOM);
 			}
 		}
@@ -118,7 +116,6 @@ Object.extend(WhereIsMyBus.prototype, {
 		setCookie("zoom", zoom);
 	},
 	fetchData: function() {
-		console.log("this is fetchData.");
 		setTimeout(this.fetchData.bind(this), 5000);
 		$.ajax({
 			url: "vehicle_data.mhtml?agencyid=1",
@@ -127,7 +124,6 @@ Object.extend(WhereIsMyBus.prototype, {
 		});
 	},
 	loadData: function(data) {
-		console.log("this is loadData");
 		data.vehicle.forEach(this.placeVehicle.bind(this));
 	},
 	markers: {},
@@ -169,7 +165,6 @@ Object.extend(WhereIsMyBus.prototype, {
 				}
 				google.maps.event.addListener(this.markers[label], 
 											  "click", function() {
-												  console.log("click event");
 												  that.markerClick(that.vehicles[label]);
 											  });
 			}
@@ -185,12 +180,16 @@ Object.extend(WhereIsMyBus.prototype, {
 					}
 				});
 			} else {
+				var image = this.getImageURLAndSize(vehicle);
+				if (image.route.length > 2) {
+					console.log(image);
+				}
 				this.markers[label].setOptions({
 					position: new google.maps.LatLng(latitude, longitude),
 					icon: {
-						url: this.getImageURL(vehicle),
-						size: new google.maps.Size(15, 15),
-						anchor: new google.maps.Point(7, 7)
+						url:    image.url,
+						size:   new google.maps.Size(image.width, image.height),
+						anchor: new google.maps.Point(image.cx, image.cy)
 					},
 					title: this.markerTitle(vehicle)
 				});
@@ -216,7 +215,7 @@ Object.extend(WhereIsMyBus.prototype, {
 		this.infoWindowLabel = vehicle.label;
 	},
 	markerTitle: function(vehicle) {
-		var content = "{short} to {headsign} [bus {label}]"
+		var content = "{short} / {headsign} [bus {label}]"
 			.replace(/{short}/, vehicle.route_short_name)
 			.replace(/{headsign}/, vehicle.trip_headsign)
 			.replace(/{label}/, vehicle.label);
@@ -230,7 +229,7 @@ Object.extend(WhereIsMyBus.prototype, {
 	},
 	infoWindowContent: function(vehicle) {
 		var content = "";
-		content += "<h1 style='margin: 0 0 0.25em 0; font-weight: bold; font-size: 100%;'>" + vehicle.route_short_name + " to " + vehicle.trip_headsign + "</h1>\n";
+		content += "<h1 style='margin: 0 0 0.25em 0; font-weight: bold; font-size: 100%;'>" + vehicle.route_short_name + " / " + vehicle.trip_headsign + "</h1>\n";
 		content += "<p style='margin: 0.25em 0;'>Bus " + vehicle.label + ".</p>";
 		if (vehicle.next_stop && vehicle.next_stop.delay_minutes) {
 			content += "<p style='margin: 0.25em 0;'>Approx. " + vehicle.next_stop.delay_minutes + " minutes late.</p>";
@@ -242,14 +241,38 @@ Object.extend(WhereIsMyBus.prototype, {
 
 		return content;
 	},
-	getImageURL: function(vehicle) {
-		var imageURL = "http://webonastick.com/route-icons/target/route-icons/png/{colorScheme}/{route_id}.png";
-		imageURL = imageURL.replace(/{colorScheme}/, this.getColorScheme(vehicle));
-		imageURL = imageURL.replace(/{route_id}/, vehicle.route_id);
-		return imageURL;
+	getImageURLAndSize: function(vehicle) {
+		var imageName, imageURL, colorScheme, width, height, cx, cy;
+		
+		imageName = String(vehicle.route_id);
+
+		if (imageName.length > 2) {
+			width = 24;
+			height = 16;
+			cx = 12;
+			cy = 8;
+		} else {
+			width = 16;
+			height = 16;
+			cx = 8;
+			cy = 8;
+		}
+
+		colorScheme = this.getColorScheme(vehicle);
+
+		imageURL = "http://webonastick.com/route-icons/target/route-icons/png/{colorScheme}/{imageName}.png";
+		imageURL = imageURL.replace(/{colorScheme}/, colorScheme);
+		imageURL = imageURL.replace(/{imageName}/, imageName);
+		return {
+			url: imageURL,
+			width: width,
+			height: height,
+			cx: cx,
+			cy: cy,
+			route: imageName
+		};
 	},
 	getColorScheme: function(vehicle) {
-		console.log(vehicle);
 		var express = /\bexpress\b/i.test(vehicle.trip_headsign);
 		if (vehicle.route_id == "94" || vehicle.route_id == "95" || vehicle.route_id == "90") {
 			return "white-on-red";
@@ -266,7 +289,6 @@ Object.extend(WhereIsMyBus.prototype, {
 	},
 	showTransitLayer: function(bool) {
 		if (bool === undefined || bool === null) { bool = true; }
-		console.log(bool);
 		if (bool) {
 			if (!this.transitLayer) {
 				this.transitLayer = new google.maps.TransitLayer();
@@ -280,7 +302,6 @@ Object.extend(WhereIsMyBus.prototype, {
 	},
 	showTrafficLayer: function(bool) {
 		if (bool === undefined || bool === null) { bool = true; }
-		console.log(bool);
 		if (bool) {
 			if (!this.trafficLayer) {
 				this.trafficLayer = new google.maps.TrafficLayer();
@@ -294,7 +315,6 @@ Object.extend(WhereIsMyBus.prototype, {
 	},
 	showBicyclingLayer: function(bool) {
 		if (bool === undefined || bool === null) { bool = true; }
-		console.log(bool);
 		if (bool) {
 			if (!this.bicyclingLayer) {
 				this.bicyclingLayer = new google.maps.BicyclingLayer();
