@@ -8,16 +8,14 @@ jQuery(function($) {
 	t = new WhereIsMyBus();
 });
 
-var GOOGLE_MAPS_USE_SENSOR = true;
 var GOOGLE_MAPS_API_KEY = "AIzaSyDORq7-X81z4tMI8GnQrzBQKzHZVyvpBMo";
 var REFRESH_INTERVAL = 5;	// milliseconds
 var CENTER_LAT =  38.186;
 var CENTER_LNG = -85.676;
 var DEFAULT_ZOOM     = 11;
 var DEFAULT_GPS_ZOOM = 13;
-var GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/maps/api/js?key={API_KEY}&sensor={SENSOR}";
+var GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/maps/api/js?key={API_KEY}";
 GOOGLE_MAPS_API_URL = GOOGLE_MAPS_API_URL.replace(/\{API_KEY\}/, encodeURIComponent(GOOGLE_MAPS_API_KEY));
-GOOGLE_MAPS_API_URL = GOOGLE_MAPS_API_URL.replace(/\{SENSOR\}/, encodeURIComponent(String(GOOGLE_MAPS_USE_SENSOR)));
 
 var BUSFAN_MODE = /\bbusfan\b/.test(location.search);
 var TEXT_MARKER_MODE = /\btextmarker\b/.test(location.search);
@@ -46,15 +44,25 @@ Object.extend(WhereIsMyBus.prototype, {
 		this.fetchData();
 		this.initLayerBindings();
 	},
-	mapOptions: {
+    mapStyles: [
+        { "featureType": "road.arterial",                  "elementType": "geometry.fill", "stylers": [ { "color": "#ffff88" } ] },
+        { "featureType": "road.highway",                   "elementType": "geometry.fill", "stylers": [ { "color": "#ffff88" } ] },
+        { "featureType": "road.highway.controlled_access", "elementType": "geometry.fill", "stylers": [ { "color": "#ffc537" } ] },
+        { "featureType": "landscape",                                                      "stylers": [ { "color": "#eeeedd" } ] },
+        { }
+    ],
+    mapOptions: {
 		center: new google.maps.LatLng(CENTER_LAT, CENTER_LNG),
 		zoom: DEFAULT_ZOOM,
 		"mapTypeId" : google.maps.MapTypeId.ROADMAP,
 		"mapTypeControlOptions": {
-			"mapTypeIds": [ google.maps.MapTypeId.HYBRID,
-							google.maps.MapTypeId.ROADMAP,
-							google.maps.MapTypeId.SATELLITE,
-							google.maps.MapTypeId.TERRAIN ],
+			"mapTypeIds": [
+                google.maps.MapTypeId.HYBRID,
+				google.maps.MapTypeId.ROADMAP,
+				google.maps.MapTypeId.SATELLITE,
+				google.maps.MapTypeId.TERRAIN,
+                "map_style"
+            ],
 			"style": google.maps.MapTypeControlStyle.HORIZONTAL_BAR // DROPDOWN_MENU, HORIZONTAL_BAR, or DEFAULT
 		},
 		"scaleControl": true,
@@ -68,7 +76,11 @@ Object.extend(WhereIsMyBus.prototype, {
 		if (!this.mapContainer) {
 			return;
 		}
+        var styledMap = new google.maps.StyledMapType(this.mapStyles, {name: "Styled Map"});
+        
 		this.mainMap = new google.maps.Map(this.mapContainer, this.mapOptions);
+        this.mainMap.mapTypes.set("map_style", styledMap);
+        this.mainMap.setMapTypeId("map_style");
 	},
 	initMap: function() {
 		var that = this;
@@ -244,7 +256,7 @@ Object.extend(WhereIsMyBus.prototype, {
 	getImageURLAndSize: function(vehicle) {
 		var imageName, imageURL, colorScheme, width, height, cx, cy;
 		
-		imageName = String(vehicle.route_id);
+		imageName = String(vehicle.route_id).replace(/x$/i, "");
 
 		if (imageName.length > 2) {
 			width = 24;
@@ -260,7 +272,7 @@ Object.extend(WhereIsMyBus.prototype, {
 
 		colorScheme = this.getColorScheme(vehicle);
 
-		imageURL = "http://webonastick.com/route-icons/target/route-icons/png/{colorScheme}/{imageName}.png";
+		imageURL = "https://webonastick.com/route-icons/target/route-icons/png/{colorScheme}/{imageName}.png";
 		imageURL = imageURL.replace(/{colorScheme}/, colorScheme);
 		imageURL = imageURL.replace(/{imageName}/, imageName);
 		return {
@@ -273,7 +285,7 @@ Object.extend(WhereIsMyBus.prototype, {
 		};
 	},
 	getColorScheme: function(vehicle) {
-		var express = /\bexpress\b/i.test(vehicle.trip_headsign);
+		var express = /\bexpress\b/i.test(vehicle.trip_headsign) || /x$/i.test(vehicle.route_id);
 		if (vehicle.route_id == "94" || vehicle.route_id == "95" || vehicle.route_id == "90") {
 			return "white-on-red";
 		}
