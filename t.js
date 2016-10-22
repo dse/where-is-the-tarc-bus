@@ -30,7 +30,7 @@ if (!Object.extend) {
 			destination[property] = source[property];
 		}
 		return destination;
-	}
+	};
 }
 
 var IS_MOBILE = /\b(ipad|iphone|android)\b/i.test(navigator.userAgent);
