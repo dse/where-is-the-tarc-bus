@@ -3,11 +3,6 @@
 // Lines above are for jslint, the JavaScript verifier.  http://www.jslint.com/
 //-----------------------------------------------------------------------------
 
-var t;
-jQuery(function($) {
-	t = new WhereIsMyBus();
-});
-
 var GOOGLE_MAPS_API_KEY = "AIzaSyDORq7-X81z4tMI8GnQrzBQKzHZVyvpBMo";
 var REFRESH_INTERVAL = 5;	// milliseconds
 var CENTER_LAT =  38.186;
@@ -338,5 +333,9 @@ Object.extend(WhereIsMyBus.prototype, {
 			that.showBicyclingLayer(this.checked);
 		}).trigger("change");
 	}
+});
+
+jQuery(function($) {
+	var t = new WhereIsMyBus();
 });
 
