@@ -44,13 +44,6 @@ Object.extend(WhereIsMyBus.prototype, {
 		this.fetchData();
 		this.initLayerBindings();
 	},
-    mapStyles: [
-        { "featureType": "road.arterial",                  "elementType": "geometry.fill", "stylers": [ { "color": "#ffff88" } ] },
-        { "featureType": "road.highway",                   "elementType": "geometry.fill", "stylers": [ { "color": "#ffff88" } ] },
-        { "featureType": "road.highway.controlled_access", "elementType": "geometry.fill", "stylers": [ { "color": "#ffc537" } ] },
-        { "featureType": "landscape",                                                      "stylers": [ { "color": "#eeeedd" } ] },
-        { }
-    ],
     mapOptions: {
 		center: new google.maps.LatLng(CENTER_LAT, CENTER_LNG),
 		zoom: DEFAULT_ZOOM,
@@ -60,8 +53,7 @@ Object.extend(WhereIsMyBus.prototype, {
                 google.maps.MapTypeId.HYBRID,
 				google.maps.MapTypeId.ROADMAP,
 				google.maps.MapTypeId.SATELLITE,
-				google.maps.MapTypeId.TERRAIN,
-                "map_style"
+				google.maps.MapTypeId.TERRAIN
             ],
 			"style": google.maps.MapTypeControlStyle.HORIZONTAL_BAR // DROPDOWN_MENU, HORIZONTAL_BAR, or DEFAULT
 		},
@@ -76,11 +68,7 @@ Object.extend(WhereIsMyBus.prototype, {
 		if (!this.mapContainer) {
 			return;
 		}
-        var styledMap = new google.maps.StyledMapType(this.mapStyles, {name: "Styled Map"});
-        
 		this.mainMap = new google.maps.Map(this.mapContainer, this.mapOptions);
-        this.mainMap.mapTypes.set("map_style", styledMap);
-        this.mainMap.setMapTypeId("map_style");
 	},
 	initMap: function() {
 		var that = this;
