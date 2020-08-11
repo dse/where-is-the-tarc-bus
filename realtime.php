@@ -39,23 +39,41 @@ if ($format === '0') {
 $filename = '/var/tmp/realtime.json';
 file_put_contents($filename, json_encode($data, JSON_PRETTY_PRINT));
 
-$asciiTable = new ASCIITable();
-$asciiTable->headings = [
-    'Route', 'Headsign', 'Vehicle', 'Due', 'Expected', 'Delay', 'Stop', 'Note'
-];
-$asciiTable->keys = [
-    'routeId', 'tripHeadsign', 'vehicleId', 'dueArrival', 'expectedArrival', 'arrivalDelayMinutes', 'nextStopName', 'stopNote'
-];
-$asciiTable->maxColumnWidth['tripHeadsign'] = 32;
-
-$routes = $realtimeData->getRouteNumbers();
-foreach ($routes as $route) {
-    $records = $realtimeData->getVehicleTripInfoByRoute($route);
-    foreach ($records as $record) {
-        $asciiTable->rows[] = $record;
+if ($format === 'text') {
+    $asciiTable = new ASCIITable();
+    $asciiTable->headings = [
+        'Route', 'Headsign', 'Vehicle', 'Due', 'Expected', 'Delay', 'Stop', 'Note'
+    ];
+    $asciiTable->keys = [
+        'routeId', 'tripHeadsign', 'vehicleId', 'dueArrival', 'expectedArrival', 'arrivalDelayMinutes', 'nextStopName', 'stopNote'
+    ];
+    $asciiTable->maxColumnWidth['tripHeadsign'] = 32;
+    $routes = $realtimeData->getRouteNumbers();
+    foreach ($routes as $route) {
+        $records = $realtimeData->getVehicleTripInfoByRoute($route);
+        foreach ($records as $record) {
+            $asciiTable->rows[] = $record;
+        }
+        $asciiTable->rows[] = null;
     }
-    $asciiTable->rows[] = null;
+    header('Content-type: text/plain');
+    print $asciiTable;
+} else {
+    $data = [];
+    $routes = $realtimeData->getRouteNumbers();
+    $data['routes'] = [];
+    $data['recordsByRoute'] = [];
+    foreach ($routes as $route) {
+        $records = $realtimeData->getVehicleTripInfoByRoute($route);
+        if (count($records)) {
+            $data['routes'][] = $route;
+            $data['recordsByRoute'][$route] = &$records;
+            $isFirstRow = true;
+            foreach ($records as &$record) {
+                $record['isFirstRow'] = $isFirstRow;
+                $isFirstRow = false;
+            }
+        }
+    }
+    include 'realtime.tpl.html';
 }
-
-header('Content-type: text/plain');
-print $asciiTable;
