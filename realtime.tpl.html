@@ -1,0 +1,100 @@
+<!DOCTYPE html><!-- mode: web; web-mode-engine: php -->
+<html>
+    <head>
+        <?php virtual('/includes/2019/head-section.inc.html'); ?>
+        <title>
+            TARC Status
+        </title>
+        <link rel="stylesheet" href="realtime.css">
+    </head>
+    <body>
+
+        <?php virtual('/includes/2019/header.inc.html'); ?>
+        <?php virtual('/includes/2019/begin-document.inc.txt'); ?>
+
+        <h1>
+            TARC Status
+        </h1>
+
+        <table class="realtimeTable">
+            <colgroup>
+                <col class="realtimeTable__routeId">
+                <col class="realtimeTable__tripHeadsign">
+                <col class="realtimeTable__vehicleId">
+                <col class="realtimeTable__dueArrival">
+                <col class="realtimeTable__expectedArrival">
+                <col class="realtimeTable__arrivalDelayMinutes">
+                <col class="realtimeTable__nextStopName">
+                <col class="realtimeTable__stopNote">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th class="realtimeTable__routeId">
+                        Route
+                    </th>
+                    <th class="realtimeTable__tripHeadsign">
+                        Headsign
+                    </th>
+                    <th class="realtimeTable__vehicleId">
+                        Vehicle
+                    </th>
+                    <th class="realtimeTable__dueArrival">
+                        Due
+                    </th>
+                    <th class="realtimeTable__expectedArrival">
+                        Expected
+                    </th>
+                    <th class="realtimeTable__arrivalDelayMinutes">
+                        Delay
+                    </th>
+                    <th class="realtimeTable__nextStopName">
+                        Stop
+                    </th>
+                    <th class="realtimeTable__stopNote">
+                        Note
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach (data['routes'] as $route) { ?>
+                    <?php $records = $data['recordsByRoute'][$route]; ?>
+                    <?php $rowCount = count($records); ?>
+                    <?php foreach ($records as $record) { ?>
+                        <tr class="realtimeTable__row--vehicleId-<?= $record['vehicleId'] ?> realtimeTable__row--routeId-<?= $record['routeId'] ?>">
+                            <?php if ($record['firstRow']) { ?>
+                                <td class="realtimeTable__routeId" rowspan="<?= htmlentities($rowCount) ?>">
+                                    <?= htmlentities($record['routeId']) ?>
+                                </td>
+                            <?php } ?>
+                            <td class="realtimeTable__tripHeadsign">
+                                <?= htmlentities($record['tripHeadsign']) ?>
+                            </td>
+                            <td class="realtimeTable__vehicleId">
+                                <?= htmlentities($record['vehicleId']) ?>
+                            </td>
+                            <td class="realtimeTable__dueArrival">
+                                <?= htmlentities($record['dueArrival']) ?>
+                            </td>
+                            <td class="realtimeTable__expectedArrival">
+                                <?= htmlentities($record['expectedArrival']) ?>
+                            </td>
+                            <td class="realtimeTable__arrivalDelayMinutes">
+                                <?= htmlentities($record['arrivalDelayMinutes']) ?>
+                            </td>
+                            <td class="realtimeTable__nextStopName">
+                                <?= htmlentities($record['nextStopName']) ?>
+                            </td>
+                            <td class="realtimeTable__stopNote">
+                                <?= htmlentities($record['stopNote']) ?>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                <?php } ?>
+            </tbody>
+        </table>
+
+        <?php virtual('/includes/2019/end-document.inc.txt'); ?>
+        <?php virtual('/includes/2019/footer.inc.html'); ?>
+
+    </body>
+</html>
