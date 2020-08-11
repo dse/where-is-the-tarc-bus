@@ -69,7 +69,6 @@ Object.assign(WhereIsMyBus.prototype, {
 	},
 
     initMap: function () {
-		var that = this;
 		this.showMap();
 		if (navigator.geolocation !== undefined) {
 			var onsuccess = this.setLocationFromGPS.bind(this);
@@ -139,8 +138,6 @@ Object.assign(WhereIsMyBus.prototype, {
 	vehicles: {},
 
     placeVehicle: function (entity) {
-		var that = this;
-
 		var vehicleId = entity.id;
 		var latitude = entity.vehicle.position.latitude;
 		var longitude = entity.vehicle.position.longitude;
@@ -184,8 +181,8 @@ Object.assign(WhereIsMyBus.prototype, {
 			}
 			google.maps.event.addListener(this.markers[vehicleId],
 										  "click", function () {
-											  that.markerClick(that.vehicles[vehicleId]);
-										  });
+											  this.markerClick(this.vehicles[vehicleId]);
+										  }.bind(this));
 		}
 
 		if (WhereIsMyBus.TEXT_MARKER_MODE) {
@@ -336,16 +333,15 @@ Object.assign(WhereIsMyBus.prototype, {
 		}
 	},
 	initLayerBindings: function () {
-		var that = this;
 		$(":checkbox[name='showTransitLayer']").change(function () {
-			that.showTransitLayer(this.checked);
-		}).trigger("change");
+			this.showTransitLayer(this.checked);
+		}.bind(this)).trigger("change");
 		$(":checkbox[name='showTrafficLayer']").change(function () {
-			that.showTrafficLayer(this.checked);
-		}).trigger("change");
+			this.showTrafficLayer(this.checked);
+		}.bind(this)).trigger("change");
 		$(":checkbox[name='showBicyclingLayer']").change(function () {
-			that.showBicyclingLayer(this.checked);
-		}).trigger("change");
+			this.showBicyclingLayer(this.checked);
+		}.bind(this)).trigger("change");
 	},
 
     getTextMarkerClass: function (vehicle) {
