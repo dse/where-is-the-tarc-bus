@@ -16,7 +16,7 @@
             TARC Status
         </h1>
 
-        <table class="realtimeTable">
+        <table class="realtimeTable table table-stroked">
             <colgroup>
                 <col class="realtimeTable__routeId">
                 <col class="realtimeTable__tripHeadsign">
@@ -56,12 +56,13 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach (data['routes'] as $route) { ?>
+                <?php foreach ($data['routes'] as $route) { ?>
+                    <!-- route $route -->
                     <?php $records = $data['recordsByRoute'][$route]; ?>
                     <?php $rowCount = count($records); ?>
                     <?php foreach ($records as $record) { ?>
-                        <tr class="realtimeTable__row--vehicleId-<?= $record['vehicleId'] ?> realtimeTable__row--routeId-<?= $record['routeId'] ?>">
-                            <?php if ($record['firstRow']) { ?>
+                        <tr class="<?= join(' ', $record['classes']) ?>">
+                            <?php if ($record['isFirstRow']) { ?>
                                 <td class="realtimeTable__routeId" rowspan="<?= htmlentities($rowCount) ?>">
                                     <?= htmlentities($record['routeId']) ?>
                                 </td>
