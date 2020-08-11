@@ -36,8 +36,8 @@ if ($format === '0') {
     exit;
 }
 
-$filename = '/var/tmp/realtime.json';
-file_put_contents($filename, json_encode($data, JSON_PRETTY_PRINT));
+// $filename = '/var/tmp/realtime.json';
+// file_put_contents($filename, json_encode($data, JSON_PRETTY_PRINT));
 
 if ($format === 'text') {
     $asciiTable = new ASCIITable();
