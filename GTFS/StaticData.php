@@ -11,14 +11,17 @@ class StaticData {
     const GROUP_BY_ROUTE_ID = 1 << 0;
     const INDEX_BY_TRIP_ID  = 1 << 1;
 
-    public $dsn = getenv('GTFS_STATIC_DATA_DSN');
-    public $username = getenv('GTFS_STATIC_DATA_USERNAME');
-    public $password = getenv('GTFS_STATIC_DATA_PASSWORD');
+    public $dsn;
+    public $username;
+    public $password;
     public $agencyName = 'ridetarc.org';
     public $feedUrl = 'http://googletransit.ridetarc.org/feed/google_transit.zip';
     private $dbh;
 
     function __construct() {
+        $this->dsn      = getenv('GTFS_STATIC_DATA_DSN');
+        $this->username = getenv('GTFS_STATIC_DATA_USERNAME');
+        $this->password = getenv('GTFS_STATIC_DATA_PASSWORD');
         $this->dbh = new PDO($this->dsn, $this->username, $this->password);
     }
 
