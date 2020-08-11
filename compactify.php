@@ -15,6 +15,7 @@ function compactify($json) {
 
     $simplified = '';
     $regular = '';
+    $values = 0;
 
     while (1) {
         if (compactify_slurp($blah, '/^\s*\{\s*/s', $matches)) {
@@ -28,6 +29,7 @@ function compactify($json) {
             }
             $simplified = '{ ';
             $regular    = '{ ';
+            $values     = 0;
         } else if (compactify_slurp($blah, '/^\s*\[\s*/s', $matches)) {
             $levels[] = [ 'indent' => $indent ];
             $cursor += 2;
@@ -39,6 +41,7 @@ function compactify($json) {
             }
             $simplified = '[';
             $regular    = '[ ';
+            $values     = 0;
         } else if (compactify_slurp($blah, '/^\s*(\"(?:[^"]+|\\\\")*\")\s*/s', $matches)) {
             if (isset($simplified)) {
                 $simplified .= $matches[1][0];
@@ -67,6 +70,7 @@ function compactify($json) {
             if (isset($simplified)) {
                 $simplified .= ", ";
                 $regular .= ",\n" . str_repeat(' ', $indent);
+                $values += 1;
             } else {
                 $result .= ",\n" . str_repeat(' ', $indent);
             }
@@ -83,9 +87,15 @@ function compactify($json) {
             if (isset($simplified)) {
                 $simplified .= ']';
                 $regular .= ' ]';
-                $result .= $simplified;
+                if ($values) { $values += 1; }
+                if ($values > 4) {
+                    $result .= $regular;
+                } else {
+                    $result .= $simplified;
+                }
                 unset($simplified);
                 unset($regular);
+                unset($values);
             } else {
                 $result .= ' ]';
             }
@@ -95,9 +105,15 @@ function compactify($json) {
             if (isset($simplified)) {
                 $simplified .= ' }';
                 $regular .= ' }';
-                $result .= $simplified;
+                if ($values) { $values += 1; }
+                if ($values > 4) {
+                    $result .= $regular;
+                } else {
+                    $result .= $simplified;
+                }
                 unset($simplified);
                 unset($regular);
+                unset($values);
             } else {
                 $result .= ' }';
             }
