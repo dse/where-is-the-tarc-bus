@@ -57,11 +57,11 @@
 }
 
 .realtimeTable__row--newVehicle .realtimeTable__vehicleId {
-    background-color: lime;
+    background-color: #cccc99;
     color: black;
 }
 .realtimeTable__row--unknownVehicle .realtimeTable__vehicleId {
-    background-color: yellow;
+    background-color: #ffff00;
     color: black;
     font-weight: bold;
 }
