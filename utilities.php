@@ -53,7 +53,8 @@ function is_known_vehicle($vehicle) {
 function is_new_vehicle($vehicle) {
     $vehicle = intval($vehicle);
     return (
-        ($vehicle >= 2720 && $vehicle <= 2726)
+        ($vehicle >= 2720 && $vehicle <= 2726) ||
+        ($vehicle >= 2930 && $vehicle <= 2932)
     );
 }
 function coalesce() {
