@@ -3,7 +3,7 @@
     <head>
         <?php virtual('/includes/2019/head-section.inc.html'); ?>
         <title>
-            TARC Status
+            TARC Tracker
         </title>
         <link rel="stylesheet" href="realtime.css">
     </head>
@@ -13,7 +13,7 @@
         <?php virtual('/includes/2019/begin-document.inc.txt'); ?>
 
         <h1>
-            TARC Status
+            TARC Tracker
         </h1>
 
         <table class="realtimeTable table table-stroked dataTable">
@@ -70,8 +70,8 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
-                <?php foreach ($data['routes'] as $route) { ?>
+            <?php foreach ($data['routes'] as $route) { ?>
+                <tbody>
                     <!-- route $route -->
                     <?php $records = $data['recordsByRoute'][$route]; ?>
                     <?php $rowCount = count($records); ?>
@@ -118,8 +118,8 @@
                             </td>
                         </tr>
                     <?php } ?>
-                <?php } ?>
-            </tbody>
+                </tbody>
+            <?php } ?>
         </table>
 
         <?php virtual('/includes/2019/end-document.inc.txt'); ?>
