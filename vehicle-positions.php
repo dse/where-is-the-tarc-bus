@@ -6,6 +6,7 @@ require_once __DIR__ . '/Utility/getCachedContent.php';
 $url = 'http://googletransit.ridetarc.org/realtime/Vehicle/VehiclePositions.json';
 
 $pretty = @$_REQUEST['pretty'];
+$compact = @$_REQUEST['compact'];
 
 $jsonEncodeFlags = 0;
 if ($pretty) {
@@ -19,5 +20,10 @@ if (!$data) {
 
 http_response_code(200);
 header('Content-Type: application/json');
-echo json_encode($data, $jsonEncodeFlags);
+$json = json_encode($data, $jsonEncodeFlags);
+if ($compact) {
+    require_once __DIR__ . '/compactify.php';
+    $json = compactify($json);
+}
+echo $json;
 exit(0);
