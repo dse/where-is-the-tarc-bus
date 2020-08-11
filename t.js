@@ -283,16 +283,8 @@ Object.assign(WhereIsMyBus.prototype, {
 
     getColorScheme: function (vehicle) {
         var express = /\bexpress\b/i.test(vehicle.trip_headsign) || /x$/i.test(vehicle.routeId);
-        if (vehicle.routeId == "94" || vehicle.routeId == "95" || vehicle.routeId == "90") {
+        if (vehicle.routeId == "94") {
             return "white-on-red";
-        }
-        if (WhereIsMyBus.BUSFAN_MODE) {
-            if (/^13[56789]\d$/.test(vehicle.label)) {
-                return express ? "blue-on-white" : "white-on-blue";
-            }
-            if (/^14\d\d$/.test(vehicle.label)) {
-                return express ? "blue-on-white" : "white-on-blue";
-            }
         }
         return express ? "black-on-yellow" : "white-on-black";
     },
