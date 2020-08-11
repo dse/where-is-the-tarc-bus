@@ -1,4 +1,4 @@
-/*jslint browser: true, sloppy: true */
+/*global google, console, getCookies, setCookie, MarkerWithLabel, $, jQuery */
 //-----------------------------------------------------------------------------
 // Lines above are for jslint, the JavaScript verifier.  http://www.jslint.com/
 //-----------------------------------------------------------------------------
@@ -307,7 +307,7 @@ Object.assign(WhereIsMyBus.prototype, {
 
     getColorScheme: function (vehicle) {
         var express = /\bexpress\b/i.test(vehicle.trip_headsign) || /x$/i.test(vehicle.routeId);
-        if (vehicle.routeId == "94") {
+        if (vehicle.routeId === "94" || vehicle.routeId === 94) {
             return "white-on-red";
         }
         return express ? "black-on-yellow" : "white-on-black";
@@ -368,7 +368,7 @@ Object.assign(WhereIsMyBus.prototype, {
     },
 
     getTextMarkerClass: function (vehicle) {
-        if (this.BUSFAN_MODE) {
+        if (WhereIsMyBus.BUSFAN_MODE) {
             return this.getTextMarkerClassForBusFans(vehicle);
         }
         if (/x$/i.test(vehicle.routeId)) {
