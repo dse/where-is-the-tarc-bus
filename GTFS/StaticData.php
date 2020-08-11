@@ -23,6 +23,7 @@ class StaticData {
         $this->username = getenv('GTFS_STATIC_DATA_USERNAME');
         $this->password = getenv('GTFS_STATIC_DATA_PASSWORD');
         $this->dbh = new PDO($this->dsn, $this->username, $this->password);
+        $this->dbh->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     }
 
     function getAgencyId() {
