@@ -16,31 +16,45 @@ function indent_string($string, $prefix, $prefix2 = null) {
     $string = chomp($string) . "\n";
     return $string;
 }
+function is_rapid_tarc_vehicle($vehicle) {
+    $vehicle = intval($vehicle);
+    return ($vehicle === 1370 || $vehicle >= 1920 && $vehicle <= 1928);
+}
+function is_unknown_vehicle($vehicle) {
+    $vehicle = intval($vehicle);
+    return !is_known_vehicle($vehicle) && !is_new_vehicle($vehicle);
+}
+function is_known_vehicle($vehicle) {
+    $vehicle = intval($vehicle);
+    return (($vehicle >= 1 && $vehicle <= 10) || // 35' Proterra
+            ($vehicle >= 12 && $vehicle <= 17) || // 40' Proterra
+            ($vehicle >= 2001 && $vehicle <= 2012) ||
+            ($vehicle >= 2050 && $vehicle <= 2056) || // Gillig shorties
+            ($vehicle >= 2101 && $vehicle <= 2111) ||
+            ($vehicle >= 2250 && $vehicle <= 2266) || // Gillig shorties
+            ($vehicle >= 2301 && $vehicle <= 2320) ||
+            ($vehicle >= 2401 && $vehicle <= 2405) || // Hybrids
+            ($vehicle >= 2501 && $vehicle <= 2516) ||
+            ($vehicle >= 2701 && $vehicle <= 2704) || // Hybrids
+            ($vehicle >= 2801 && $vehicle <= 2806) ||
+            ($vehicle >= 2901 && $vehicle <= 2903) || // Hybrids
+            ($vehicle >= 2910 && $vehicle <= 2926) ||
+            ($vehicle >= 1001 && $vehicle <= 1009) || // Hybrids
+            ($vehicle >= 1301 && $vehicle <= 1316) ||
+            ($vehicle >= 1320 && $vehicle <= 1330) || // Hybrids
+            ($vehicle >= 1350 && $vehicle <= 1370) || // BRT (1370 in RAPID TARC colors)
+            ($vehicle >= 1401 && $vehicle <= 1412) ||
+            ($vehicle >= 1601 && $vehicle <= 1625) ||
+            ($vehicle === 1630) || // Hybrid
+            ($vehicle >= 1701 && $vehicle <= 1702) || // 35-footers
+            ($vehicle >= 1901 && $vehicle <= 1910) ||
+            ($vehicle >= 1921 && $vehicle <= 1928));
+}
 function is_new_vehicle($vehicle) {
     $vehicle = intval($vehicle);
-    return !(($vehicle >= 1 && $vehicle <= 10) || // 35' Proterra
-             ($vehicle >= 12 && $vehicle <= 17) || // 40' Proterra
-             ($vehicle >= 2001 && $vehicle <= 2012) ||
-             ($vehicle >= 2050 && $vehicle <= 2056) || // Gillig shorties
-             ($vehicle >= 2101 && $vehicle <= 2111) ||
-             ($vehicle >= 2250 && $vehicle <= 2266) || // Gillig shorties
-             ($vehicle >= 2301 && $vehicle <= 2320) ||
-             ($vehicle >= 2401 && $vehicle <= 2405) || // Hybrids
-             ($vehicle >= 2501 && $vehicle <= 2516) ||
-             ($vehicle >= 2701 && $vehicle <= 2704) || // Hybrids
-             ($vehicle >= 2801 && $vehicle <= 2806) ||
-             ($vehicle >= 2901 && $vehicle <= 2903) || // Hybrids
-             ($vehicle >= 2910 && $vehicle <= 2926) ||
-             ($vehicle >= 1001 && $vehicle <= 1009) || // Hybrids
-             ($vehicle >= 1301 && $vehicle <= 1316) ||
-             ($vehicle >= 1320 && $vehicle <= 1330) || // Hybrids
-             ($vehicle >= 1350 && $vehicle <= 1370) || // BRT (1370 in RAPID TARC colors)
-             ($vehicle >= 1401 && $vehicle <= 1412) ||
-             ($vehicle >= 1601 && $vehicle <= 1625) ||
-             ($vehicle === 1630) || // Hybrid
-             ($vehicle >= 1701 && $vehicle <= 1702) || // 35-footers
-             ($vehicle >= 1901 && $vehicle <= 1910) ||
-             ($vehicle >= 1921 && $vehicle <= 1928)); // RAPID TARC BRT
+    return (
+        ($vehicle >= 2720 && $vehicle <= 2726)
+    );
 }
 function coalesce() {
     foreach (func_get_args() as $arg) {
