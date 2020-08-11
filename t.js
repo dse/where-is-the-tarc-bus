@@ -8,7 +8,7 @@ function WhereIsMyBus() {
 }
 
 WhereIsMyBus.GOOGLE_MAPS_API_KEY = "AIzaSyDORq7-X81z4tMI8GnQrzBQKzHZVyvpBMo";
-WhereIsMyBus.REFRESH_INTERVAL    = 5;	// milliseconds
+WhereIsMyBus.REFRESH_INTERVAL    = 5; // milliseconds
 WhereIsMyBus.CENTER_LAT          = 38.186;
 WhereIsMyBus.CENTER_LNG          = -85.676;
 WhereIsMyBus.DEFAULT_ZOOM        = 11;
