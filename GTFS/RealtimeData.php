@@ -217,7 +217,7 @@ class RealtimeData {
         $isFirstStop = $result['isFirstStop'] = ($firstStopSequence === $nextStop['stop_sequence']);
         $isLastStop  = $result['isLastStop']  = ($lastStopSequence === $nextStop['stop_sequence']);
 
-        $result['stopNote'] = $isFirstStop ? 'FIRST STOP' : ($isLastStop ? 'LAST STOP' : null);
+        $result['stopNote'] = $isFirstStop ? 'First Stop' : ($isLastStop ? 'Last Stop' : null);
 
         return $result;
     }
