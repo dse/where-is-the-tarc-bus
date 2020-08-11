@@ -67,13 +67,27 @@ if ($format === 'text') {
         $records = $realtimeData->getVehicleTripInfoByRoute($route);
         if (count($records)) {
             $data['routes'][] = $route;
-            $data['recordsByRoute'][$route] = &$records;
             $isFirstRow = true;
             foreach ($records as &$record) {
                 $record['isFirstRow'] = $isFirstRow;
                 $isFirstRow = false;
+                $record['classes'] = [];
+                $record['classes'][] = 'realtimeTable__row--vehicleId-' . $record['vehicleId'];
+                $record['classes'][] = 'realtimeTable__row--routeId-' . $record['routeId'];
+                if (is_new_vehicle($record['vehicleId'])) {
+                    $record['classes'][] = 'realtimeTable__row--newVehicle';
+                }
+                if (is_unknown_vehicle($record['vehicleId'])) {
+                    $record['classes'][] = 'realtimeTable__row--unknownVehicle';
+                }
+                if (is_rapid_tarc_vehicle($record['vehicleId'])) {
+                    $record['classes'][] = 'realtimeTable__row--rapidTarcVehicle';
+                }
             }
+            unset($record);
+            $data['recordsByRoute'][$route] = $records;
         }
     }
+    unset($route);
     include 'realtime.tpl.html';
 }
