@@ -1,5 +1,5 @@
 <%args>
-	$agencyid
+	$agency
 	$tripid
 </%args>
 <%once>
@@ -16,7 +16,7 @@
 </%once>
 <%perl>
 	my $gtfs2 = Geo::GTFS2->new();
-	$gtfs2->set_agency_id($agencyid);
+	$gtfs2->set_agency($agency);
 	my $data = $gtfs2->get_trip_details_feed($tripid);
 	$r->content_type("text/html");
 </%perl>

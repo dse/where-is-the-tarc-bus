@@ -1,75 +1,194 @@
 <%args>
-	$agencyid
+$agencyid => undef
+$agency   => undef
 </%args>
 <%once>
-	use lib "/home/dse/git/KNOWN_WORKING/HTTP-Cache-Transparent/lib";
-	use lib "/home/dse/git/KNOWN_WORKING/JSON-Encoder-Compact/lib";
-	use lib "/home/dse/git/KNOWN_WORKING/geo-gtfs-modules-2/Geo-GTFS2/lib";
+use Data::Dumper;
+use List::MoreUtils qw(uniq);
+use URI::Escape;
+use POSIX qw(floor);
 
-	use lib "/Users/dse/git/HTTP-Cache-Transparent/lib";
-	use lib "/Users/dse/git/JSON-Encoder-Compact/lib";
-	use lib "/Users/dse/git/geo-gtfs-modules-2/Geo-GTFS2/lib";
+use lib "/home/dse/git/HTTP-Cache-Transparent/lib";
+use lib "/home/dse/git/geo-gtfs-modules-2/Geo-GTFS2/lib";
+use lib "/home/dse/git/perl-app-thingy/lib";
+use Geo::GTFS2;
 
-	use Geo::GTFS2;
+my $fleet_groups = [
+    { length => 4, low => "0901", high => "0927", cssClass => "on-the-way-out", model => "1998 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "0928", high => "0954", cssClass => "on-the-way-out", model => "1998/1999 Gillig Advantage Low Floor, 40ft" },
+    { length => 3, low => "901",  high => "927",  cssClass => "on-the-way-out", model => "1998 Gillig Advantage Low Floor, 40ft" },
+    { length => 3, low => "928",  high => "954",  cssClass => "on-the-way-out", model => "1998/1999 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "0960", high => "0979", cssClass => "on-the-way-out", model => "1999 Gillig Advantage Low Floor, 40ft" },
+    { length => 3, low => "960",  high => "979",  cssClass => "on-the-way-out", model => "1999 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "0983", high => "0999", cssClass => "on-the-way-out", model => "1999 Gillig Advantage Low Floor, 40ft" },
+    { length => 3, low => "983",  high => "999",  cssClass => "on-the-way-out", model => "1999 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "2001", high => "2012", model => "2000 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "2050", high => "2057", model => "2000 Gillig Advantage Low Floor, 30ft" },
+    { length => 4, low => "2101", high => "2111", model => "2001 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "2250", high => "2251", model => "2001 Gillig Advantage Low Floor, 30ft" },
+    { length => 4, low => "2252", high => "2266", model => "2002 Gillig Advantage Low Floor, 30ft" },
+    { length => 4, low => "2301", high => "2320", model => "2003 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "2401", high => "2405", model => "2004 Gillig Advantage Low Floor, 40ft hybrid" },
+    { length => 4, low => "2501", high => "2516", model => "2005 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "2701", high => "2704", model => "2007 Gillig Advantage Low Floor, 40ft hybrid" },
+    { length => 4, low => "2801", high => "2806", model => "2008 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "2901", high => "2903", model => "2009 Gillig Advantage Low Floor, 40ft hybrid" },
+    { length => 4, low => "2910", high => "2926", model => "2009 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "1001", high => "1009", model => "2010 Gillig Advantage Low Floor, 40ft hybrid" },
+    { length => 4, low => "1301", high => "1316", model => "2013 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "1320", high => "1330", model => "2013 Gillig Advantage Low Floor, 40ft hybrid" },
+    { length => 4, low => "1350", high => "1370", model => "2013 Gillig Advantage Low Floor, 40ft BRT" },
+    { length => 4, low => "1401", high => "1412", model => "2014 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "1601", high => "1625", model => "2016 Gillig Advantage Low Floor, 40ft" },
+    { length => 4, low => "1630", high => "1630", model => "2016 Gillig Advantage Low Floor, 40ft hybrid" },
+	{ length => 4, low => "1701", high => "1702", model => "2017 Gillig Advantage Low Floor, 35ft" },
+    { length => 4, low => "0001", high => "0010", model => "2014? Proterra Catalyst electric, 35ft" },
+    { length => 4, low => "0012", high => "0017", model => "2016 Proterra Catalyst electric, 40ft" },
+    { length => 4, low => '1901', high => '1910', model => '2019 Gillig Advantage Low Floor, 40ft' },
+    { length => 4, low => '1921', high => '1928', model => '2019 Gillig Advantage Low Floor, 40ft BRT' },
+    { catchall => 1, cssClass => "new-or-unlisted" }
+];
+
+# fleet number => one of the hashes in the $fleet_groups list above
+sub get_vehicle_group {
+	my ($fleet_number) = @_;
+	foreach my $fleet_group (@$fleet_groups) {
+		if (defined $fleet_group->{length}) {
+			if (length $fleet_number == $fleet_group->{length}) {
+				if ($fleet_number ge $fleet_group->{low} &&
+					$fleet_number le $fleet_group->{high}) {
+					return $fleet_group;
+				}
+			}
+		} elsif ($fleet_group->{catchall}) {
+			return $fleet_group;
+		}
+	}
+	return undef;
+}
+
+sub short_dumper {
+    local $Data::Dumper::Indent   = 0;
+    local $Data::Dumper::Terse    = 0;
+    local $Data::Dumper::Sortkeys = 1;
+    return Data::Dumper::Dumper(@_);
+}
+
+sub long_dumper {
+    local $Data::Dumper::Indent   = 1;
+    local $Data::Dumper::Terse    = 0;
+    local $Data::Dumper::Sortkeys = 1;
+    return Data::Dumper::Dumper(@_);
+}
 </%once>
 <%perl>
+use warnings;
+use strict;
+
+if (!defined $agency) {
+    if (defined $agencyid && $agencyid eq "1") {
+        $m->redirect("?agency=ridetarc.org");
+    } else {
+        $m->abort(500);
+    }
+}
+
+my @record_groups;
+
+{
 	my $gtfs2 = Geo::GTFS2->new();
-	$gtfs2->set_agency_id($agencyid);
+	$gtfs2->set_agency($agency);
 	my $data = $gtfs2->get_vehicle_feed();
 	$r->content_type("text/html");
 
 	my @records = @{$data->{vehicle}};
+	@records = grep { !$_->{_exclude_} } @records;
+
+	foreach my $r (@records) {
+		my $group = get_vehicle_group($r->{label});
+		if ($group) {
+			$r->{series}    = $group->{low}         if defined $group->{low};
+			$r->{cssClass}	= $group->{cssClass}	if defined $group->{cssClass};
+			$r->{model}		= $group->{model}		if defined $group->{model};
+		}
+	}
+
+	foreach my $r (@records) {
+		$r->{route_number} = $r->{route_short_name} // $r->{route_id};
+		$r->{url} = sprintf(
+            "./trip_details.mhtml?agency=%s&tripid=%s",
+            uri_escape($agency),
+            uri_escape(eval { $r->{trip_id} } // '')
+        );
+        $r->{delay_minutes} = floor($r->{delay} / 60 + 0.5);
+	}
+
+	my @routes = uniq map { $_->{route_number} } @records;
+	@record_groups = map {
+		my $route = $_;
+		{
+			route => $route,
+			records => [ grep { $_->{route_number} eq $route } @records ]
+		}
+	} @routes;
+
+	$gtfs2->close_db(); # aggh pissssss
+}
 
 </%perl>
 <!DOCTYPE html>
 <html>
-<head>
-	<title>
-		How is TARC Doing?
-	</title>
-	<link rel="stylesheet" href="details.css" />
-</head>
-<body>
-	<h1>How is TARC Doing?</h1>
-	<table class="tarc_status">
-	<thead>
-	<tr>
-		<th rowspan="2" class="vehicle">Vehicle</th>
-		<th rowspan="2" class="route">Route</th>
-		<th rowspan="2" class="trip_headsign">Destination</th>
-		<th colspan="3">Next Stop</th>
-	</tr>
-	<tr>
-			<th>	<i>Expected</i> Time	</th>
-			<th>	Delay			</th>
-			<th>	Location		</th>
-	</tr>
-	</thead>
-	<tbody>
-% my $prev_route;
-% foreach my $r (grep { !$_->{_exclude_} } @{$data->{vehicle}}) {
-%	my $route = $r->{route_short_name};
-%	if (defined $prev_route && $route ne $prev_route) {
-	</tbody>
-	<tbody>
-%	}
-%	$prev_route = $route;
-%	my $url = "./trip_details.mhtml?agencyid=$agencyid&tripid=$r->{trip_id}";
-%	my $ns = $r->{next_stop};
-	<tr>
-		<td class="label"><a href="<% $url |h %>"><% $r->{label} |h %></a></td>
-		<td class="route_short_name"><a href="<% $url |h %>"><% $r->{route_short_name} |h %></a></td>
-		<td class="trip_headsign"><a href="<% $url |h %>"><% $r->{trip_headsign} |h %></a></td>
+	<head>
+		<title>
+			How is TARC Doing?
+		</title>
+		<link rel="stylesheet" href="details.css" />
+	</head>
+	<body>
+		<h1>How is TARC Doing?</h1>
+		<table class="tarc_status">
+			<thead>
+				<tr>
+					<th rowspan="2" class="vehicle">Vehicle</th>
+					<th rowspan="2" class="route">Route</th>
+					<th rowspan="2" class="trip_headsign">Destination</th>
+					<th colspan="3">Next Stop</th>
+				</tr>
+				<tr>
+					<th><i>Expected</i> Time</th>
+					<th>Delay</th>
+					<th>Location</th>
+				</tr>
+			</thead>
+%         foreach my $record_group (@record_groups) {
+			<tbody>
+%             foreach my $r (@{$record_group->{records}}) {
+%               my $url   = $r->{url};
+%               my $title = $r->{title};
+%               my $ns    = $r->{expected_next_stop};
+%               my $route = $r->{route_number};
+                <!-- <% "\n" . long_dumper($r) . "\n" %> -->
+				<tr>
+					<td class="label <% $r->{cssClass} |h %> <% $r->{series} |h %>">
+						<a href="<% $url |h %>" title="<% $r->{model} |h %>"><% $r->{label} |h %></a>
+					</td>
+					<td class="route_short_name">
+                        <a href="<% $url |h %>"><% $route |h %></a>
+                    </td>
+					<td class="trip_headsign">
+                        <a href="<% $url |h %>"><% eval { $r->{trip}->{trip_headsign} } // '' |h %></a>
+                    </td>
 %		if ($ns) {
-			<td class="time"          ><% $ns->{time_hh_mm_ss} |h %></td>
-			<td class="delay"         ><% $ns->{delay_minutes} |h %></td>
-			<td class="stop_name"     ><% $ns->{stop_name} |h %></td>
+					<td class="time"          ><% $ns->{arrival_time_fmt} // '' |h %></td>
+					<td class="delay"         ><% $ns->{delay_minutes} |h %></td>
+					<td class="stop_name"     ><% $ns->{stop_name} |h %></td>
 %		} else {
-			<td colspan="4"></td>
+					<td colspan="3"></td>
 %		}
-	</tr>
-% }
-	</tbody>
-	</table>
-</body>
+				</tr>
+%			  }
+			</tbody>
+%         }
+		</table>
+	</body>
 </html>
