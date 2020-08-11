@@ -404,6 +404,7 @@ Object.assign(WhereIsMyBus.prototype, {
             else if (vehicleNumber >= 1701 && vehicleNumber <= 1702) { /* do nothing */ }
             else if (vehicleNumber >= 1901 && vehicleNumber <= 1910) { /* do nothing */ }
             else if (vehicleNumber >= 1920 && vehicleNumber <= 1928) { className += ' textMarker--rapidTarc'; }
+            else if (vehicleNumber >= 12   && vehicleNumber <= 17  ) { /* do nothing */ }
             else {
                 className += ' textMarker--novelForBusFans';
             }
