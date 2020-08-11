@@ -208,27 +208,51 @@ Object.assign(WhereIsMyBus.prototype, {
                 title: this.markerTitle(vehicle)
             });
         }
-
-        if (this.infoWindowLabel === vehicleId && this.infoWindow) {
-            this.infoWindow.setOptions({
-                content: this.infoWindowContent(vehicle)
-            });
-        }
     },
 
-    infoWindowLabel: null,
+    infoWindowTripUpdateContent: function (tripUpdateData, vehicle) {
+        var tripRecord = tripUpdateData.tripRecord;
+        if (!tripRecord) {
+            console.error('no tripRecord');
+            return this.infoWindowContent(vehicle);
+        }
+
+        var destination = tripRecord.trip_headsign || tripUpdateData.lastStop.stop_name;
+
+        var content = '';
+        content += '<h1>' + vehicle.vehicleIdDisplayed + '</h1>';
+        content += '<h2>' + tripRecord.route_id + ' - ' + destination + '</h2>';
+        content += '<p>trip id ' + vehicle.tripId + '</p>';
+        return content;
+    },
+
+    infoWindowVehicleId: null,
 
     markerClick: function (vehicle) {
         if (this.infoWindow) {
             this.infoWindow.close();
-            this.infoWindowLabel = null;
+            this.infoWindowVehicleId = null;
         }
-        this.infoWindow = new google.maps.InfoWindow({
-            content: this.infoWindowContent(vehicle)
+
+        var url = WhereIsMyBus.TRIP_UPDATE_URL.replace(/\{TRIP_ID\}/g, encodeURIComponent(vehicle.tripId));
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            success: function (tripUpdateData) {
+                var content = this.infoWindowTripUpdateContent(tripUpdateData, vehicle);
+                this.infoWindow = new google.maps.InfoWindow({ content: content });
+                var marker = this.markers[vehicle.vehicleId];
+                this.infoWindow.open(this.mainMap, marker);
+                this.infoWindowVehicleId = vehicle.vehicleId;
+            }.bind(this),
+            error: function () {
+                var content = this.infoWindowContent(vehicle);
+                this.infoWindow = new google.maps.InfoWindow({ content: content });
+                var marker = this.markers[vehicle.vehicleId];
+                this.infoWindow.open(this.mainMap, marker);
+                this.infoWindowVehicleId = vehicle.vehicleId;
+            }.bind(this)
         });
-        var marker = this.markers[vehicle.vehicleId];
-        this.infoWindow.open(this.mainMap, marker);
-        this.infoWindowLabel = vehicle.vehicleId;
     },
 
     markerTitle: function (vehicle) {
