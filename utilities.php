@@ -95,3 +95,6 @@ function get_yyyymmdd_weekday($yyyymmdd, $format = null) {
     }
     return date($format, $time_t);
 }
+function htmlnumber($string) {
+    return preg_replace('/-/', '&minus;', htmlentities($string));
+}
