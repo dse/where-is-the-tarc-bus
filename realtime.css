@@ -4,10 +4,14 @@
 .realtimeTable {
     table-layout: fixed;
 }
-.realtimeTable__routeId             { width: 5%; }
+.realtimeTable__routeId             { width: 5%; text-align: center; }
 .realtimeTable__tripHeadsign        { width: 25%; }
-.realtimeTable__arrivalDelayMinutes { width: 10%; }
+.realtimeTable__vehicleId           { text-align: center; }
+.realtimeTable__dueArrival          { text-align: center; }
+.realtimeTable__expectedArrival     { text-align: center; }
+.realtimeTable__arrivalDelayMinutes { width: 5%; text-align: center; }
 .realtimeTable__nextStopName        { width: 25%; }
+.realtimeTable__tripId              { text-align: center; }
 
 @media (max-width: 1023.9375px) {
     .realtimeTable {
@@ -24,7 +28,7 @@
 }
 @media (max-width: 639.9375px) {
     .realtimeTable {
-        font-size: 50%;
+        font-size: 62.5%;
     }
     .realtimeTable thead th,
     .realtimeTable thead td,
@@ -34,8 +38,36 @@
     .realtimeTable tfoot td {
         padding: 2px;
     }
+    .realtimeTable__tripId {
+        display: none;
+    }
+    .realtimeTable__stopNote {
+        display: none;
+    }
+    .realtimeTable__arrivalDelayMinutes {
+        width: 7.5%;
+    }
+    .realtimeTable__routeId {
+        width: 7.5%;
+    }
 }
 
 .table-stroked > * > * > *:not(:first-child) {
     border-left: 1px solid #363;
+}
+
+.realtimeTable__row--newVehicle .realtimeTable__vehicleId {
+    background-color: lime;
+    color: black;
+}
+.realtimeTable__row--unknownVehicle .realtimeTable__vehicleId {
+    background-color: yellow;
+    color: black;
+    font-weight: bold;
+}
+.dataTable > thead > tr > th {
+    vertical-align: bottom;
+}
+.dataTable > tbody > tr > td {
+    vertical-align: baseline;
 }

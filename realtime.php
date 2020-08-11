@@ -52,6 +52,7 @@ if ($format === 'text') {
     foreach ($routes as $route) {
         $records = $realtimeData->getVehicleTripInfoByRoute($route);
         foreach ($records as $record) {
+            $record['stopNote'] = strtoupper($record['stopNote']);
             $asciiTable->rows[] = $record;
         }
         $asciiTable->rows[] = null;
@@ -82,6 +83,9 @@ if ($format === 'text') {
                 }
                 if (is_rapid_tarc_vehicle($record['vehicleId'])) {
                     $record['classes'][] = 'realtimeTable__row--rapidTarcVehicle';
+                }
+                if ($record['tripId']) {
+                    $record['tripIdLink'] = '/t/trip-update.php?tripid=' . urlencode($record['tripId']) . '&compact=1';
                 }
             }
             unset($record);

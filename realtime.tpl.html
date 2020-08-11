@@ -16,7 +16,7 @@
             TARC Status
         </h1>
 
-        <table class="realtimeTable table table-stroked">
+        <table class="realtimeTable table table-stroked dataTable">
             <colgroup>
                 <col class="realtimeTable__routeId">
                 <col class="realtimeTable__tripHeadsign">
@@ -26,25 +26,37 @@
                 <col class="realtimeTable__arrivalDelayMinutes">
                 <col class="realtimeTable__nextStopName">
                 <col class="realtimeTable__stopNote">
+                <col class="realtimeTable__tripId">
             </colgroup>
             <thead>
                 <tr>
-                    <th class="realtimeTable__routeId">
-                        Route
-                    </th>
-                    <th class="realtimeTable__tripHeadsign">
-                        Headsign
+                    <th colspan="2" class="realtimeTable__routeId-tripHeadsign">
+                        Route, Headsign
                     </th>
                     <th class="realtimeTable__vehicleId">
-                        Vehicle
+                        <div class="hide-for-small-only">
+                            Vehicle
+                        </div>
+                        <div class="show-for-small-only">
+                            Veh.
+                        </div>
                     </th>
                     <th class="realtimeTable__dueArrival">
                         Due
                     </th>
                     <th class="realtimeTable__expectedArrival">
-                        Expected
+                        <div class="hide-for-small-only">
+                            Estimated
+                        </div>
+                        <div class="show-for-small-only">
+                            ETA
+                        </div>
                     </th>
                     <th class="realtimeTable__arrivalDelayMinutes">
+                        <div class="hide-for-small-only">
+                        </div>
+                        <div class="show-for-small-only">
+                        </div>
                         Delay
                     </th>
                     <th class="realtimeTable__nextStopName">
@@ -52,6 +64,9 @@
                     </th>
                     <th class="realtimeTable__stopNote">
                         Note
+                    </th>
+                    <th class="realtimeTable__tripId">
+                        Trip ID
                     </th>
                 </tr>
             </thead>
@@ -74,19 +89,32 @@
                                 <?= htmlentities($record['vehicleId']) ?>
                             </td>
                             <td class="realtimeTable__dueArrival">
-                                <?= htmlentities($record['dueArrival']) ?>
+                                <div class="hide-for-small-only">
+                                    <?= htmlentities($record['dueArrival']) ?>
+                                </div>
+                                <div class="show-for-small-only">
+                                    <?= htmlentities(preg_replace('/:\d+$/', '', $record['dueArrival'])) ?>
+                                </div>
                             </td>
                             <td class="realtimeTable__expectedArrival">
-                                <?= htmlentities($record['expectedArrival']) ?>
+                                <div class="hide-for-small-only">
+                                    <?= htmlentities($record['expectedArrival']) ?>
+                                </div>
+                                <div class="show-for-small-only">
+                                    <?= htmlentities(preg_replace('/:\d+$/', '', $record['expectedArrival'])) ?>
+                                </div>
                             </td>
                             <td class="realtimeTable__arrivalDelayMinutes">
-                                <?= htmlentities($record['arrivalDelayMinutes']) ?>
+                                <?= htmlnumber($record['arrivalDelayMinutes']) ?>
                             </td>
                             <td class="realtimeTable__nextStopName">
                                 <?= htmlentities($record['nextStopName']) ?>
                             </td>
                             <td class="realtimeTable__stopNote">
                                 <?= htmlentities($record['stopNote']) ?>
+                            </td>
+                            <td class="realtimeTable__tripId">
+                                <a target="_blank" href="<?= htmlentities($record['tripIdLink']) ?>"><?= htmlentities($record['tripId']) ?></a>
                             </td>
                         </tr>
                     <?php } ?>
