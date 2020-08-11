@@ -10,17 +10,28 @@ var CENTER_LNG = -85.676;
 var DEFAULT_ZOOM     = 11;
 var DEFAULT_GPS_ZOOM = 13;
 var GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/maps/api/js?key={API_KEY}";
+var TEXT_MARKER_SIZE = 15;           /* [A] see t.css */
 GOOGLE_MAPS_API_URL = GOOGLE_MAPS_API_URL.replace(/\{API_KEY\}/, encodeURIComponent(GOOGLE_MAPS_API_KEY));
 
+var VEHICLE_DATA_URL = '/t/vehicles.php';
+
 var BUSFAN_MODE = /\bbusfan\b/.test(location.search);
-var TEXT_MARKER_MODE = /\btextmarker\b/.test(location.search);
+
+var TEXT_MARKER_MODE = true;
+if (/\bimagemarker\b/.test(location.search)) {
+    TEXT_MARKER_MODE = false;
+}
 
 function WhereIsMyBus() {
 	this.init();
 }
 
+if (TEXT_MARKER_MODE) {
+    $.getScript('/t/markerwithlabel.js');
+}
+
 if (!Object.extend) {
-	Object.extend = function(destination, source) {
+	Object.extend = function (destination, source) {
 		for (var property in source) {
 			destination[property] = source[property];
 		}
@@ -31,7 +42,8 @@ if (!Object.extend) {
 var IS_MOBILE = /\b(ipad|iphone|android)\b/i.test(navigator.userAgent);
 
 Object.extend(WhereIsMyBus.prototype, {
-	init: function() {
+
+	init: function () {
 		this.initLocationZoom = true;
 		this.cookies = getCookies();
 		this.initMap();
@@ -39,6 +51,7 @@ Object.extend(WhereIsMyBus.prototype, {
 		this.fetchData();
 		this.initLayerBindings();
 	},
+
     mapOptions: {
 		center: new google.maps.LatLng(CENTER_LAT, CENTER_LNG),
 		zoom: DEFAULT_ZOOM,
@@ -58,14 +71,16 @@ Object.extend(WhereIsMyBus.prototype, {
 		"streetViewControl": false,
 		"zoomControl": !IS_MOBILE
 	},
-	showMap: function() {
+
+    showMap: function () {
 		this.mapContainer = $(".mapContainer").get(0);
 		if (!this.mapContainer) {
 			return;
 		}
 		this.mainMap = new google.maps.Map(this.mapContainer, this.mapOptions);
 	},
-	initMap: function() {
+
+    initMap: function () {
 		var that = this;
 		this.showMap();
 		if (navigator.geolocation !== undefined) {
@@ -76,7 +91,8 @@ Object.extend(WhereIsMyBus.prototype, {
 			this.initializeFromCookiesOrDefaults();
 		}
 	},
-	setLocationFromGPS: function(position) {
+
+    setLocationFromGPS: function (position) {
 		if (this.initLocationZoom) {
 			this.mainMap.setCenter(new google.maps.LatLng(position.coords.latitude,
 														  position.coords.longitude));
@@ -87,7 +103,8 @@ Object.extend(WhereIsMyBus.prototype, {
 			}
 		}
 	},
-	setLocationFromCookiesOrDefaults: function() {
+
+    setLocationFromCookiesOrDefaults: function () {
 		if (this.initLocationZoom) {
 			if (this.cookies.lat !== undefined && this.cookies.lng !== undefined) {
 				this.mainMap.setCenter(new google.maps.LatLng(Number(this.cookies.lat), 
@@ -98,11 +115,13 @@ Object.extend(WhereIsMyBus.prototype, {
 			}
 		}
 	},
-	setEvents: function() {
+
+    setEvents: function () {
 		google.maps.event.addListener(this.mainMap, "center_changed", this.updateCookies.bind(this));
 		google.maps.event.addListener(this.mainMap, "zoom_changed", this.updateCookies.bind(this));
 	},
-	updateCookies: function() {
+
+    updateCookies: function () {
 		this.initLocationZoom = false;
 		var center  = this.mainMap.getCenter();
 		var zoom    = this.mainMap.getZoom();
@@ -110,94 +129,112 @@ Object.extend(WhereIsMyBus.prototype, {
 		setCookie("lng",  center.lng());
 		setCookie("zoom", zoom);
 	},
-	fetchData: function() {
+
+    fetchData: function () {
 		setTimeout(this.fetchData.bind(this), 5000);
 		$.ajax({
-			url: "vehicle_data.mhtml?agencyid=1",
+			url: VEHICLE_DATA_URL,
 			dataType: "json",
 			success: this.loadData.bind(this)
 		});
 	},
-	loadData: function(data) {
-		data.vehicle.forEach(this.placeVehicle.bind(this));
-	},
-	markers: {},
-	vehicles: {},
-	placeVehicle: function(vehicle) {
-		var that = this;
-		var label = vehicle.label;
-		var latitude = vehicle.latitude;
-		var longitude = vehicle.longitude;
-		var route_id = vehicle.route_id;
-		var timestamp = vehicle.timestamp;
-		var trip_id = vehicle.trip_id;
-		this.vehicles[label] = vehicle;
-		var exclude = vehicle._exclude_;
 
-		if (exclude) {
-			if (this.markers[label]) {
-				this.markers[label].setMap(null);
-				delete this.markers[label];
-			}
-		} else {
-			if (!this.markers[label]) {
-				if (TEXT_MARKER_MODE) {
-					this.markers[label] = new MarkerWithLabel({
-						clickable: true,
-						flat: true,
-						map: this.mainMap,
-						optimized: false, // eh?
-						visible: true
-					});
-				} else {
-					this.markers[label] = new google.maps.Marker({
-						clickable: true,
-						flat: true,
-						map: this.mainMap,
-						optimized: false, // eh?
-						visible: true
-					});
-				}
-				google.maps.event.addListener(this.markers[label], 
-											  "click", function() {
-												  that.markerClick(that.vehicles[label]);
-											  });
-			}
+    loadData: function (data) {
+        if (data.vehicle) {
+		    data.vehicle.forEach(this.placeVehicle.bind(this));
+        } else if (data.entity) {
+		    data.entity.forEach(this.placeVehicle.bind(this));
+        }
+	},
+
+    markers: {},
+	vehicles: {},
+
+    placeVehicle: function (entity) {
+		var that = this;
+
+		var vehicleId = entity.id;
+		var latitude = entity.vehicle.position.latitude;
+		var longitude = entity.vehicle.position.longitude;
+		var routeId = entity.vehicle.trip.route_id;
+		var timestamp = entity.vehicle.timestamp;
+		var tripId = entity.vehicle.trip.trip_id;
+
+        var routeDisplayed = routeId.replace(/^0+(?=[^0])/, '');
+        var vehicleIdDisplayed = vehicleId.replace(/^0+(?=[^0])/, '');
+
+        var vehicle = {
+            vehicleId: vehicleId,
+            latitude: latitude,
+            longitude: longitude,
+            routeId: routeId,
+            tripId: tripId,
+            routeDisplayed: routeDisplayed,
+            vehicleIdDisplayed: vehicleIdDisplayed,
+            timestamp: timestamp
+        };
+
+		this.vehicles[vehicleId] = vehicle;
+
+		if (!this.markers[vehicleId]) {
 			if (TEXT_MARKER_MODE) {
-				this.markers[label].setOptions({
-					position: new google.maps.LatLng(latitude, longitude),
-					labelContent: vehicle.route_id,
-					labelClass: "textMarker",
-					labelAnchor: new google.maps.Point(10, 10), /* [A] see t.css */
-					title: this.markerTitle(vehicle),
-					icon: {
-						url: "about:blank"
-					}
+				this.markers[vehicleId] = new MarkerWithLabel({
+					clickable: true,
+					flat: true,
+					map: this.mainMap,
+					optimized: false, // eh?
+					visible: true
 				});
 			} else {
-				var image = this.getImageURLAndSize(vehicle);
-				if (image.route.length > 2) {
-					console.log(image);
+				this.markers[vehicleId] = new google.maps.Marker({
+					clickable: true,
+					flat: true,
+					map: this.mainMap,
+					optimized: false, // eh?
+					visible: true
+				});
+			}
+			google.maps.event.addListener(this.markers[vehicleId],
+										  "click", function () {
+											  that.markerClick(that.vehicles[vehicleId]);
+										  });
+		}
+
+		if (TEXT_MARKER_MODE) {
+			this.markers[vehicleId].setOptions({
+				position: new google.maps.LatLng(latitude, longitude),
+				labelContent: routeDisplayed,
+				labelClass: this.getTextMarkerClass(vehicle),
+				labelAnchor: new google.maps.Point(TEXT_MARKER_SIZE / 2, TEXT_MARKER_SIZE / 2),
+				title: this.markerTitle(vehicle),
+				icon: {
+					url: "about:blank"
 				}
-				this.markers[label].setOptions({
-					position: new google.maps.LatLng(latitude, longitude),
-					icon: {
-						url:    image.url,
-						size:   new google.maps.Size(image.width, image.height),
-						anchor: new google.maps.Point(image.cx, image.cy)
-					},
-					title: this.markerTitle(vehicle)
-				});
+			});
+		} else {
+			var image = this.getImageURLAndSize(vehicle);
+			if (image.route.length > 2) {
+				console.log(image);
 			}
-			if (this.infoWindowLabel === label && this.infoWindow) {
-				this.infoWindow.setOptions({
-					content: this.infoWindowContent(vehicle)
-				});
-			}
+			this.markers[vehicleId].setOptions({
+				position: new google.maps.LatLng(latitude, longitude),
+				icon: {
+					url:    image.url,
+					size:   new google.maps.Size(image.width, image.height),
+					anchor: new google.maps.Point(image.cx, image.cy)
+				},
+				title: this.markerTitle(vehicle)
+			});
+		}
+
+		if (this.infoWindowLabel === vehicleId && this.infoWindow) {
+			this.infoWindow.setOptions({
+				content: this.infoWindowContent(flatStructure)
+			});
 		}
 	},
 	infoWindowLabel: null,
-	markerClick: function(vehicle) {
+	markerClick: function (vehicle) {
 		if (this.infoWindow) {
 			this.infoWindow.close();
 			this.infoWindowLabel = null;
@@ -205,41 +242,30 @@ Object.extend(WhereIsMyBus.prototype, {
 		this.infoWindow = new google.maps.InfoWindow({
 			content: this.infoWindowContent(vehicle)
 		});
-		var marker = this.markers[vehicle.label];
+		var marker = this.markers[vehicle.vehicleId];
 		this.infoWindow.open(this.mainMap, marker);
-		this.infoWindowLabel = vehicle.label;
+		this.infoWindowLabel = vehicle.vehicleId;
 	},
-	markerTitle: function(vehicle) {
-		var content = "{short} / {headsign} [bus {label}]"
-			.replace(/{short}/, vehicle.route_short_name)
-			.replace(/{headsign}/, vehicle.trip_headsign)
-			.replace(/{label}/, vehicle.label);
+	markerTitle: function (vehicle) {
+        var content = '';
+        content += vehicle.vehicleIdDisplayed;
+        content += ' on route ';
+        content += vehicle.routeDisplayed;
+        return content;
+	},
+	infoWindowContent: function (vehicle) {
+        var content = '';
+        content += '<p>';
+        content += vehicle.vehicleIdDisplayed;
+        content += ' on route ';
+        content += vehicle.routeDisplayed;
+        content += '</p>';
 		return content;
 	},
-	tripDetailsURL: function(vehicle) {
-		return "trip_details.mhtml?agencyid=1&tripid=%s".replace(/%s/, vehicle.trip_id);
-	},
-	tripDetailsDataURL: function(vehicle) {
-		return "trip_details_data.mhtml?agencyid=1&tripid=%s".replace(/%s/, vehicle.trip_id);
-	},
-	infoWindowContent: function(vehicle) {
-		var content = "";
-		content += "<h1 style='margin: 0 0 0.25em 0; font-weight: bold; font-size: 100%;'>" + vehicle.route_short_name + " / " + vehicle.trip_headsign + "</h1>\n";
-		content += "<p style='margin: 0.25em 0;'>Bus " + vehicle.label + ".</p>";
-		if (vehicle.next_stop && vehicle.next_stop.delay_minutes) {
-			content += "<p style='margin: 0.25em 0;'>Approx. " + vehicle.next_stop.delay_minutes + " minutes late.</p>";
-		} else {
-			content += "<p style='margin: 0.25em 0;'>On time.</p>";
-		}
-		content += "<p style='margin: 0.25em 0 0 0;'><a href='%s' target='_blank'>Trip Details</a>\n".replace(/%s/, this.tripDetailsURL(vehicle));
-		content += "   | <a href='%s' target='_blank'>Trip Data</a></p>\n".replace(/%s/, this.tripDetailsDataURL(vehicle));
-
-		return content;
-	},
-	getImageURLAndSize: function(vehicle) {
+	getImageURLAndSize: function (vehicle) {
 		var imageName, imageURL, colorScheme, width, height, cx, cy;
 		
-		imageName = String(vehicle.route_id).replace(/x$/i, "");
+		imageName = String(vehicle.routeId).replace(/x$/i, "");
 
 		if (imageName.length > 2) {
 			width = 24;
@@ -267,9 +293,9 @@ Object.extend(WhereIsMyBus.prototype, {
 			route: imageName
 		};
 	},
-	getColorScheme: function(vehicle) {
-		var express = /\bexpress\b/i.test(vehicle.trip_headsign) || /x$/i.test(vehicle.route_id);
-		if (vehicle.route_id == "94" || vehicle.route_id == "95" || vehicle.route_id == "90") {
+	getColorScheme: function (vehicle) {
+		var express = /\bexpress\b/i.test(vehicle.trip_headsign) || /x$/i.test(vehicle.routeId);
+		if (vehicle.routeId == "94" || vehicle.routeId == "95" || vehicle.routeId == "90") {
 			return "white-on-red";
 		}
 		if (BUSFAN_MODE) {
@@ -282,7 +308,7 @@ Object.extend(WhereIsMyBus.prototype, {
 		}
 		return express ? "black-on-yellow" : "white-on-black";
 	},
-	showTransitLayer: function(bool) {
+	showTransitLayer: function (bool) {
 		if (bool === undefined || bool === null) { bool = true; }
 		if (bool) {
 			if (!this.transitLayer) {
@@ -295,7 +321,7 @@ Object.extend(WhereIsMyBus.prototype, {
 			}
 		}
 	},
-	showTrafficLayer: function(bool) {
+	showTrafficLayer: function (bool) {
 		if (bool === undefined || bool === null) { bool = true; }
 		if (bool) {
 			if (!this.trafficLayer) {
@@ -308,7 +334,7 @@ Object.extend(WhereIsMyBus.prototype, {
 			}
 		}
 	},
-	showBicyclingLayer: function(bool) {
+	showBicyclingLayer: function (bool) {
 		if (bool === undefined || bool === null) { bool = true; }
 		if (bool) {
 			if (!this.bicyclingLayer) {
@@ -321,21 +347,52 @@ Object.extend(WhereIsMyBus.prototype, {
 			}
 		}
 	},
-	initLayerBindings: function() {
+	initLayerBindings: function () {
 		var that = this;
-		$(":checkbox[name='showTransitLayer']").change(function() {
+		$(":checkbox[name='showTransitLayer']").change(function () {
 			that.showTransitLayer(this.checked);
 		}).trigger("change");
-		$(":checkbox[name='showTrafficLayer']").change(function() {
+		$(":checkbox[name='showTrafficLayer']").change(function () {
 			that.showTrafficLayer(this.checked);
 		}).trigger("change");
-		$(":checkbox[name='showBicyclingLayer']").change(function() {
+		$(":checkbox[name='showBicyclingLayer']").change(function () {
 			that.showBicyclingLayer(this.checked);
 		}).trigger("change");
-	}
+	},
+
+    getTextMarkerClass: function (vehicle) {
+        var vehicleNumber = Number(vehicle.vehicleIdDisplayed);
+        var className = 'textMarker';
+        if (!isNaN(vehicleNumber)) {
+            if      (vehicleNumber >= 2101 && vehicleNumber <= 2111) { /* do nothing */ }
+            else if (vehicleNumber >= 2001 && vehicleNumber <= 2012) { /* do nothing */ }
+            else if (vehicleNumber >= 2250 && vehicleNumber <= 2265) { /* do nothing */ }
+            else if (vehicleNumber >= 2301 && vehicleNumber <= 2320) { /* do nothing */ }
+            else if (vehicleNumber >= 2401 && vehicleNumber <= 2405) { /* do nothing */ }
+            else if (vehicleNumber >= 2501 && vehicleNumber <= 2516) { /* do nothing */ }
+            else if (vehicleNumber >= 2701 && vehicleNumber <= 2704) { /* do nothing */ }
+            else if (vehicleNumber >= 2801 && vehicleNumber <= 2806) { /* do nothing */ }
+            else if (vehicleNumber >= 2901 && vehicleNumber <= 2903) { /* do nothing */ }
+            else if (vehicleNumber >= 2910 && vehicleNumber <= 2926) { /* do nothing */ }
+            else if (vehicleNumber >= 1001 && vehicleNumber <= 1009) { /* do nothing */ }
+            else if (vehicleNumber >= 1301 && vehicleNumber <= 1316) { /* do nothing */ }
+            else if (vehicleNumber >= 1320 && vehicleNumber <= 1330) { /* do nothing */ }
+            else if (vehicleNumber >= 1350 && vehicleNumber <= 1370) { /* do nothing */ }
+            else if (vehicleNumber >= 1401 && vehicleNumber <= 1412) { /* do nothing */ }
+            else if (vehicleNumber >= 1601 && vehicleNumber <= 1625) { /* do nothing */ }
+            else if (vehicleNumber >= 1630 && vehicleNumber <= 1630) { /* do nothing */ }
+            else if (vehicleNumber >= 1701 && vehicleNumber <= 1702) { /* do nothing */ }
+            else if (vehicleNumber >= 1901 && vehicleNumber <= 1910) { /* do nothing */ }
+            else if (vehicleNumber >= 1920 && vehicleNumber <= 1928) { className += ' textMarker--whiteOnBlue'; }
+            else {
+                className += ' textMarker--yellowOnRed';
+            }
+        }
+        return className;
+    }
 });
 
-jQuery(function($) {
+jQuery(function ($) {
 	var t = new WhereIsMyBus();
 });
 
