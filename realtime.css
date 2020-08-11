@@ -1,0 +1,37 @@
+.realtimeTable thead th {
+    text-align: center;
+}
+.realtimeTable {
+    table-layout: fixed;
+}
+.realtimeTable__routeId             { width: 5%; }
+.realtimeTable__tripHeadsign        { width: 25%; }
+.realtimeTable__arrivalDelayMinutes { width: 10%; }
+.realtimeTable__nextStopName        { width: 25%; }
+
+@media (max-width: 1023.9375px) {
+    .realtimeTable {
+        font-size: 75%;
+    }
+    .realtimeTable thead th,
+    .realtimeTable thead td,
+    .realtimeTable tbody th,
+    .realtimeTable tbody td,
+    .realtimeTable tfoot th,
+    .realtimeTable tfoot td {
+        padding: 4px;
+    }
+}
+@media (max-width: 639.9375px) {
+    .realtimeTable {
+        font-size: 50%;
+    }
+    .realtimeTable thead th,
+    .realtimeTable thead td,
+    .realtimeTable tbody th,
+    .realtimeTable tbody td,
+    .realtimeTable tfoot th,
+    .realtimeTable tfoot td {
+        padding: 2px;
+    }
+}
