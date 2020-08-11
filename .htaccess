@@ -1,6 +1,12 @@
 PerlModule HTML::Mason::ApacheHandler
 
 <FilesMatch "(\.mhtml)$">
-SetHandler perl-script
-PerlHandler HTML::Mason::ApacheHandler
+    SetHandler perl-script
+    PerlHandler HTML::Mason::ApacheHandler
 </FilesMatch>
+
+<FilesMatch "geo-gtfs-auth\.yml$">
+    Require all denied
+</FilesMatch>
+
+Include .htaccess.auth
