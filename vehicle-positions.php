@@ -12,12 +12,12 @@ if ($pretty) {
     $jsonEncodeFlags |= JSON_PRETTY_PRINT;
 }
 
-$vp = getCachedContent($url, 15);
-if (!$vp) {
-    die("failed to get vehicle positions for some reason");
+$data = getCachedContent($url, 15);
+if (!$data) {
+    die("failed to get data for some reason");
 }
 
 http_response_code(200);
 header('Content-Type: application/json');
-echo json_encode($vp, $jsonEncodeFlags);
+echo json_encode($data, $jsonEncodeFlags);
 exit(0);
