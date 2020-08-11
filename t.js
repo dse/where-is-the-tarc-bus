@@ -3,45 +3,33 @@
 // Lines above are for jslint, the JavaScript verifier.  http://www.jslint.com/
 //-----------------------------------------------------------------------------
 
-var GOOGLE_MAPS_API_KEY = "AIzaSyDORq7-X81z4tMI8GnQrzBQKzHZVyvpBMo";
-var REFRESH_INTERVAL = 5;	// milliseconds
-var CENTER_LAT =  38.186;
-var CENTER_LNG = -85.676;
-var DEFAULT_ZOOM     = 11;
-var DEFAULT_GPS_ZOOM = 13;
-var GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/maps/api/js?key={API_KEY}";
-var TEXT_MARKER_SIZE = 15;           /* [A] see t.css */
-GOOGLE_MAPS_API_URL = GOOGLE_MAPS_API_URL.replace(/\{API_KEY\}/, encodeURIComponent(GOOGLE_MAPS_API_KEY));
-
-var VEHICLE_DATA_URL = '/t/vehicles.php';
-
-var BUSFAN_MODE = /\bbusfan\b/.test(location.search);
-
-var TEXT_MARKER_MODE = true;
-if (/\bimagemarker\b/.test(location.search)) {
-    TEXT_MARKER_MODE = false;
-}
-
 function WhereIsMyBus() {
 	this.init();
 }
 
-if (TEXT_MARKER_MODE) {
+WhereIsMyBus.GOOGLE_MAPS_API_KEY = "AIzaSyDORq7-X81z4tMI8GnQrzBQKzHZVyvpBMo";
+WhereIsMyBus.REFRESH_INTERVAL    = 5;	// milliseconds
+WhereIsMyBus.CENTER_LAT          = 38.186;
+WhereIsMyBus.CENTER_LNG          = -85.676;
+WhereIsMyBus.DEFAULT_ZOOM        = 11;
+WhereIsMyBus.DEFAULT_GPS_ZOOM    = 13;
+WhereIsMyBus.GOOGLE_MAPS_API_URL = "https://maps.googleapis.com/maps/api/js?key={API_KEY}";
+WhereIsMyBus.TEXT_MARKER_SIZE    = 15;           /* [A] see t.css */
+WhereIsMyBus.GOOGLE_MAPS_API_URL = WhereIsMyBus.GOOGLE_MAPS_API_URL.replace(/\{API_KEY\}/, encodeURIComponent(WhereIsMyBus.GOOGLE_MAPS_API_KEY));
+WhereIsMyBus.VEHICLE_DATA_URL    = '/t/vehicles.php';
+WhereIsMyBus.BUSFAN_MODE         = /\bbusfan\b/.test(location.search);
+WhereIsMyBus.IS_MOBILE           = /\b(ipad|iphone|android)\b/i.test(navigator.userAgent);
+
+WhereIsMyBus.TEXT_MARKER_MODE = true;
+if (/\bimagemarker\b/.test(location.search)) {
+    WhereIsMyBus.TEXT_MARKER_MODE = false;
+}
+
+if (WhereIsMyBus.TEXT_MARKER_MODE) {
     $.getScript('/t/markerwithlabel.js');
 }
 
-if (!Object.extend) {
-	Object.extend = function (destination, source) {
-		for (var property in source) {
-			destination[property] = source[property];
-		}
-		return destination;
-	};
-}
-
-var IS_MOBILE = /\b(ipad|iphone|android)\b/i.test(navigator.userAgent);
-
-Object.extend(WhereIsMyBus.prototype, {
+Object.assign(WhereIsMyBus.prototype, {
 
 	init: function () {
 		this.initLocationZoom = true;
@@ -53,8 +41,8 @@ Object.extend(WhereIsMyBus.prototype, {
 	},
 
     mapOptions: {
-		center: new google.maps.LatLng(CENTER_LAT, CENTER_LNG),
-		zoom: DEFAULT_ZOOM,
+		center: new google.maps.LatLng(WhereIsMyBus.CENTER_LAT, WhereIsMyBus.CENTER_LNG),
+		zoom: WhereIsMyBus.DEFAULT_ZOOM,
 		"mapTypeId" : google.maps.MapTypeId.ROADMAP,
 		"mapTypeControlOptions": {
 			"mapTypeIds": [
@@ -66,10 +54,10 @@ Object.extend(WhereIsMyBus.prototype, {
 			"style": google.maps.MapTypeControlStyle.HORIZONTAL_BAR // DROPDOWN_MENU, HORIZONTAL_BAR, or DEFAULT
 		},
 		"scaleControl": true,
-		"overviewMapControl": !IS_MOBILE,
-		"panControl": !IS_MOBILE,
+		"overviewMapControl": !WhereIsMyBus.IS_MOBILE,
+		"panControl": !WhereIsMyBus.IS_MOBILE,
 		"streetViewControl": false,
-		"zoomControl": !IS_MOBILE
+		"zoomControl": !WhereIsMyBus.IS_MOBILE
 	},
 
     showMap: function () {
@@ -99,7 +87,7 @@ Object.extend(WhereIsMyBus.prototype, {
 			if (this.cookies.zoom !== undefined) {
 				this.mainMap.setZoom(Number(this.cookies.zoom));
 			} else {
-				this.mainMap.setZoom(DEFAULT_GPS_ZOOM);
+				this.mainMap.setZoom(WhereIsMyBus.DEFAULT_GPS_ZOOM);
 			}
 		}
 	},
@@ -133,7 +121,7 @@ Object.extend(WhereIsMyBus.prototype, {
     fetchData: function () {
 		setTimeout(this.fetchData.bind(this), 5000);
 		$.ajax({
-			url: VEHICLE_DATA_URL,
+			url: WhereIsMyBus.VEHICLE_DATA_URL,
 			dataType: "json",
 			success: this.loadData.bind(this)
 		});
@@ -177,7 +165,7 @@ Object.extend(WhereIsMyBus.prototype, {
 		this.vehicles[vehicleId] = vehicle;
 
 		if (!this.markers[vehicleId]) {
-			if (TEXT_MARKER_MODE) {
+			if (WhereIsMyBus.TEXT_MARKER_MODE) {
 				this.markers[vehicleId] = new MarkerWithLabel({
 					clickable: true,
 					flat: true,
@@ -200,12 +188,12 @@ Object.extend(WhereIsMyBus.prototype, {
 										  });
 		}
 
-		if (TEXT_MARKER_MODE) {
+		if (WhereIsMyBus.TEXT_MARKER_MODE) {
 			this.markers[vehicleId].setOptions({
 				position: new google.maps.LatLng(latitude, longitude),
 				labelContent: routeDisplayed,
 				labelClass: this.getTextMarkerClass(vehicle),
-				labelAnchor: new google.maps.Point(TEXT_MARKER_SIZE / 2, TEXT_MARKER_SIZE / 2),
+				labelAnchor: new google.maps.Point(WhereIsMyBus.TEXT_MARKER_SIZE / 2, WhereIsMyBus.TEXT_MARKER_SIZE / 2),
 				title: this.markerTitle(vehicle),
 				icon: {
 					url: "about:blank"
@@ -298,7 +286,7 @@ Object.extend(WhereIsMyBus.prototype, {
 		if (vehicle.routeId == "94" || vehicle.routeId == "95" || vehicle.routeId == "90") {
 			return "white-on-red";
 		}
-		if (BUSFAN_MODE) {
+		if (WhereIsMyBus.BUSFAN_MODE) {
 			if (/^13[56789]\d$/.test(vehicle.label)) {
 				return express ? "blue-on-white" : "white-on-blue";
 			}
