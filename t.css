@@ -67,16 +67,37 @@ body {
 
 .textMarker {
 	/* [A] see t.js */
-	background: black;
+	background-color: black;
 	color: white;
 	box-sizing: border-box;
 	text-align: center;
+	font-size: 11px;
+	line-height: 15px;
+	height: 15px;
+	width: 15px;
+	border-radius: 50%;
+	font-family: "Helvetica", "Arial", sans-serif;
 	font-weight: bold;
-	font-size: 12px;
-	line-height: 20px;
-	height: 20px;
-	width: 20px;
-	border-radius: 10px;
-	font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
-
+.textMarker--whiteOnBlue {
+    background-color: blue;
+}
+.textMarker--yellowOnRed {
+    background-color: red;
+    color: yellow;
+}
+.textMarker--express {
+    background-color: yellow;
+    color: black;
+    font-weight: normal;
+    border: 1px solid black;
+}
+.textMarker--rapidTarc {
+    background-color: #54c6f0;
+    color: black;
+    border: 1px solid black;
+}
+.textMarker--novelForBusFans {
+    background-color: red;
+    color: yellow;
+}
