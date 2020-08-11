@@ -12,7 +12,9 @@
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDORq7-X81z4tMI8GnQrzBQKzHZVyvpBMo&amp;sensor=true"></script>
 	<script src="cookies.js"></script>
         <script src="markerwithlabel.js"></script>
-	<script src="t.js"></script>
+        <script>
+            document.write('<script src="t.js?_=' + new Date().getTime() + '"><' + '/script>');
+        </script>
     </head>
     <body>
 	<div class="mapContainer">
