@@ -26,10 +26,6 @@ if (/\bimagemarker\b/.test(location.search)) {
     WhereIsMyBus.TEXT_MARKER_MODE = false;
 }
 
-if (WhereIsMyBus.TEXT_MARKER_MODE) {
-    $.getScript('/t/markerwithlabel.js');
-}
-
 Object.assign(WhereIsMyBus.prototype, {
 
     init: function () {
@@ -344,14 +340,14 @@ Object.assign(WhereIsMyBus.prototype, {
     },
 
     initLayerBindings: function () {
-        $(":checkbox[name='showTransitLayer']").change(function () {
-            this.showTransitLayer(this.checked);
+        $(":checkbox[name='showTransitLayer']").change(function (event) {
+            this.showTransitLayer(event.target.checked);
         }.bind(this)).trigger("change");
-        $(":checkbox[name='showTrafficLayer']").change(function () {
-            this.showTrafficLayer(this.checked);
+        $(":checkbox[name='showTrafficLayer']").change(function (event) {
+            this.showTrafficLayer(event.target.checked);
         }.bind(this)).trigger("change");
-        $(":checkbox[name='showBicyclingLayer']").change(function () {
-            this.showBicyclingLayer(this.checked);
+        $(":checkbox[name='showBicyclingLayer']").change(function (event) {
+            this.showBicyclingLayer(event.target.checked);
         }.bind(this)).trigger("change");
     },
 
@@ -372,8 +368,8 @@ Object.assign(WhereIsMyBus.prototype, {
         var vehicleNumber = Number(vehicle.vehicleIdDisplayed);
         var className = 'textMarker';
         if (!isNaN(vehicleNumber)) {
-            if      (vehicleNumber >= 2101 && vehicleNumber <= 2111) { /* do nothing */ }
-            else if (vehicleNumber >= 2001 && vehicleNumber <= 2012) { /* do nothing */ }
+            if      (vehicleNumber >= 2001 && vehicleNumber <= 2012) { /* do nothing */ }
+            else if (vehicleNumber >= 2101 && vehicleNumber <= 2111) { /* do nothing */ }
             else if (vehicleNumber >= 2250 && vehicleNumber <= 2265) { /* do nothing */ }
             else if (vehicleNumber >= 2301 && vehicleNumber <= 2320) { /* do nothing */ }
             else if (vehicleNumber >= 2401 && vehicleNumber <= 2405) { /* do nothing */ }
@@ -398,6 +394,7 @@ Object.assign(WhereIsMyBus.prototype, {
         }
         return className;
     }
+
 });
 
 jQuery(function ($) {
