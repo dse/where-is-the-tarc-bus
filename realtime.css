@@ -35,3 +35,7 @@
         padding: 2px;
     }
 }
+
+.table-stroked > * > * > *:not(:first-child) {
+    border-left: 1px solid #363;
+}
