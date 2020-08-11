@@ -1,47 +1,47 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-		  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-		<title>WHERE&rsquo;S MY TARC BUS</title>
-		<link rel="stylesheet" href="t.css" />
-		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDORq7-X81z4tMI8GnQrzBQKzHZVyvpBMo&amp;sensor=true"></script>
-		<script src="markerwithlabel.js"></script>
-		<!-- http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/docs/examples.html -->
-		<script src="cookies.js"></script>
-		<script src="t.js"></script>
-	</head>
-	<body>
-		<div class="mapContainer">
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black"> <!-- default, black, black-translucent,  -->
+	<title>WHERE&rsquo;S MY TARC BUS</title>
+	<link rel="stylesheet" href="t.css">
+	<script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDORq7-X81z4tMI8GnQrzBQKzHZVyvpBMo&amp;sensor=true"></script>
+	<script src="cookies.js"></script>
+        <script src="markerwithlabel.js"></script>
+	<script src="t.js"></script>
+    </head>
+    <body>
+	<div class="mapContainer">
+	</div>
+	<div class="extraControls box">
+	    <form class="extraControlsForm">
+		<div>
+		    <label>
+			<input type="checkbox" name="showTransitLayer">
+			Transit
+		    </label>
 		</div>
-		<div class="extraControls box">
-			<form class="extraControlsForm">
-				<div>
-					<label>
-						<input type="checkbox" name="showTransitLayer" />
-						Transit
-					</label>
-				</div>
-				<div>
-					<label>
-						<input type="checkbox" name="showBicyclingLayer" />
-						Bicycling
-					</label>
-				</div>
-				<div>
-					<label>
-						<input type="checkbox" name="showTrafficLayer" />
-						Traffic
-					</label>
-				</div>
-			</form>
-			<div>
-				<a target="_blank" href="tarc_status.mhtml?agencyid=1">System Status</a>
-			</div>
-			<div>
-				<a target="_blank" href="vehicle_data.mhtml?pretty=1&amp;agencyid=1">Vehicle Data</a>
-			</div>
+		<div>
+		    <label>
+			<input type="checkbox" name="showBicyclingLayer">
+			Bicycling
+		    </label>
 		</div>
-	</body>
+		<div>
+		    <label>
+			<input type="checkbox" name="showTrafficLayer">
+			Traffic
+		    </label>
+		</div>
+	    </form>
+	    <div>
+		<a target="_blank" href="tarc_status.mhtml?agency=ridetarc.org">System Status</a>
+	    </div>
+	    <div>
+		<a target="_blank" href="vehicle_data.mhtml?pretty=1&amp;agency=ridetarc.org">Vehicle Data</a>
+	    </div>
+	</div>
+    </body>
 </html>
