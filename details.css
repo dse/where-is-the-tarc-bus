@@ -45,3 +45,18 @@ table > * > * > td.route_short_name + td.trip_headsign { border-left-width: 0; }
 table > * > * > td.route_short_name { text-align: right; }
 
 h1 { text-align: center; }
+
+.on-the-way-out {
+    background: red;
+}
+.on-the-way-out a {
+    color: yellow;
+}
+.new-or-unlisted,
+.new {
+    background: blue;
+}
+.new-or-unlisted a,
+.new a {
+    color: white;
+}
