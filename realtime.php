@@ -1,6 +1,7 @@
 <?php
 
 $format = @$_REQUEST['format'];
+$fake   = @$_REQUEST['fake'];
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/GTFS/RealtimeData.php';
@@ -75,17 +76,23 @@ if ($format === 'text') {
                 $record['classes'] = [];
                 $record['classes'][] = 'realtimeTable__row--vehicleId-' . $record['vehicleId'];
                 $record['classes'][] = 'realtimeTable__row--routeId-' . $record['routeId'];
-                if (is_new_vehicle($record['vehicleId'])) {
-                    $record['classes'][] = 'realtimeTable__row--newVehicle';
-                }
-                if (is_unknown_vehicle($record['vehicleId'])) {
-                    $record['classes'][] = 'realtimeTable__row--unknownVehicle';
-                }
-                if (is_rapid_tarc_vehicle($record['vehicleId'])) {
-                    $record['classes'][] = 'realtimeTable__row--rapidTarcVehicle';
+                if (!$fake) {
+                    if (is_new_vehicle($record['vehicleId'])) {
+                        $record['classes'][] = 'realtimeTable__row--newVehicle';
+                    }
+                    if (is_unknown_vehicle($record['vehicleId'])) {
+                        $record['classes'][] = 'realtimeTable__row--unknownVehicle';
+                    }
+                    if (is_rapid_tarc_vehicle($record['vehicleId'])) {
+                        $record['classes'][] = 'realtimeTable__row--rapidTarcVehicle';
+                    }
                 }
                 if ($record['tripId']) {
                     $record['tripIdLink'] = '/t/trip-update.php?tripid=' . urlencode($record['tripId']) . '&compact=1';
+                }
+                $record['vehicleIdDisplayed'] = intval($record['vehicleId']);
+                if ($fake) {
+                    $record['vehicleIdDisplayed']= fake_bus($record['vehicleIdDisplayed']);
                 }
             }
             unset($record);
