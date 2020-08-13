@@ -365,52 +365,57 @@ Object.assign(WhereIsMyBus.prototype, {
         $(":checkbox[name='showBicyclingLayer']").change(function (event) {
             this.showBicyclingLayer(event.target.checked);
         }.bind(this)).trigger("change");
+        $(":checkbox[name='foamerMode']").change(function (event) {
+            document.documentElement.classList[event.target.checked ? 'add' : 'remove']('tarcTrackerFoamerMode');
+        }.bind(this)).trigger("change");
     },
 
     getTextMarkerClass: function (vehicle) {
-        if (WhereIsMyBus.BUSFAN_MODE) {
-            return this.getTextMarkerClassForBusFans(vehicle);
-        }
-        if (/x$/i.test(vehicle.routeId)) {
-            return 'textMarker textMarker--express';
-        }
-        if (vehicle.routeId === '10') {
-            return 'textMarker textMarker--rapidTarc';
-        }
-        return 'textMarker';
-    },
-
-    getTextMarkerClassForBusFans: function (vehicle) {
-        var vehicleNumber = Number(vehicle.vehicleIdDisplayed);
         var className = 'textMarker';
+
+        var vehicleNumber = Number(vehicle.vehicleIdDisplayed);
         if (!isNaN(vehicleNumber)) {
-            if      (vehicleNumber >= 2001 && vehicleNumber <= 2012) { /* do nothing */ }
-            else if (vehicleNumber >= 2101 && vehicleNumber <= 2111) { /* do nothing */ }
-            else if (vehicleNumber >= 2250 && vehicleNumber <= 2265) { /* do nothing */ }
-            else if (vehicleNumber >= 2301 && vehicleNumber <= 2320) { /* do nothing */ }
-            else if (vehicleNumber >= 2401 && vehicleNumber <= 2405) { /* do nothing */ }
-            else if (vehicleNumber >= 2501 && vehicleNumber <= 2516) { /* do nothing */ }
-            else if (vehicleNumber >= 2701 && vehicleNumber <= 2704) { /* do nothing */ }
-            else if (vehicleNumber >= 2801 && vehicleNumber <= 2806) { /* do nothing */ }
-            else if (vehicleNumber >= 2901 && vehicleNumber <= 2903) { /* do nothing */ }
-            else if (vehicleNumber >= 2910 && vehicleNumber <= 2926) { /* do nothing */ }
-            else if (vehicleNumber >= 1001 && vehicleNumber <= 1009) { /* do nothing */ }
-            else if (vehicleNumber >= 1301 && vehicleNumber <= 1316) { /* do nothing */ }
-            else if (vehicleNumber >= 1320 && vehicleNumber <= 1330) { /* do nothing */ }
-            else if (vehicleNumber >= 1350 && vehicleNumber <= 1370) { /* do nothing */ }
-            else if (vehicleNumber >= 1401 && vehicleNumber <= 1412) { /* do nothing */ }
-            else if (vehicleNumber >= 1601 && vehicleNumber <= 1625) { /* do nothing */ }
-            else if (vehicleNumber >= 1630 && vehicleNumber <= 1630) { /* do nothing */ }
-            else if (vehicleNumber >= 1701 && vehicleNumber <= 1702) { /* do nothing */ }
-            else if (vehicleNumber >= 1901 && vehicleNumber <= 1910) { /* do nothing */ }
-            else if (vehicleNumber >= 1920 && vehicleNumber <= 1928) { className += ' textMarker--rapidTarc'; }
-            else if (vehicleNumber >= 12   && vehicleNumber <= 17  ) { /* do nothing */ }
+            if      (vehicleNumber >= 2001 && vehicleNumber <= 2012) { className += ' textMarker--foamerBus textMarker--foamerBus--oldestBuses'; }
+            else if (vehicleNumber >= 2101 && vehicleNumber <= 2111) { }
+            else if (vehicleNumber >= 2250 && vehicleNumber <= 2265) { } /* 30 footers */
+            else if (vehicleNumber >= 2301 && vehicleNumber <= 2320) { }
+            else if (vehicleNumber >= 2401 && vehicleNumber <= 2405) { }
+            else if (vehicleNumber >= 2501 && vehicleNumber <= 2516) { }
+            else if (vehicleNumber >= 2701 && vehicleNumber <= 2704) { }
+            else if (vehicleNumber >= 2801 && vehicleNumber <= 2806) { }
+            else if (vehicleNumber >= 2901 && vehicleNumber <= 2903) { }
+            else if (vehicleNumber >= 2910 && vehicleNumber <= 2926) { }
+            else if (vehicleNumber >= 1001 && vehicleNumber <= 1009) { }
+            else if (vehicleNumber >= 1301 && vehicleNumber <= 1316) { }
+            else if (vehicleNumber >= 1320 && vehicleNumber <= 1330) { }
+            else if (vehicleNumber >= 1350 && vehicleNumber <= 1369) { } /* BRTs */
+            else if (vehicleNumber >= 1401 && vehicleNumber <= 1412) { }
+            else if (vehicleNumber >= 1601 && vehicleNumber <= 1625) { }
+            else if (vehicleNumber === 1630)                         { }
+            else if (vehicleNumber >= 1701 && vehicleNumber <= 1702) { } /* 35-footers */
+            else if (vehicleNumber >= 1901 && vehicleNumber <= 1910) { }
+            else if (vehicleNumber === 1370)                         { className += ' textMarker--foamerBus textMarker--foamerBus--rapidTarc'; }
+            else if (vehicleNumber >= 1920 && vehicleNumber <= 1928) { className += ' textMarker--foamerBus textMarker--foamerBus--rapidTarc'; }
+            else if (vehicleNumber >= 2720 && vehicleNumber <= 2726) { className += ' textMarker--foamerBus textMarker--foamerBus--exCota'; } /* 35-footers */
+            else if (vehicleNumber >= 2930 && vehicleNumber <= 2932) { className += ' textMarker--foamerBus textMarker--foamerBus--exCota'; } /* 30-footers */
+            else if (vehicleNumber >= 12   && vehicleNumber <= 17  ) { } /* 40-foot electrics */
+            else if (vehicleNumber >= 1    && vehicleNumber <= 10  ) { className += ' textMarker--foamerBus textMarker--foamerBus--louLift'; } /* 35-foot "LouLift" electrics even though routes 1 and 77 are discontinued */
+            else if (vehicleNumber === 909)                          { className += ' textMarker--foamerBus textMarker--foamerBus--possiblyTheFishbowl'; }
+            else if (vehicleNumber >= 901  && vehicleNumber <= 954 ) { className += ' textMarker--foamerBus textMarker--foamerBus--901series'; }
+            else if (vehicleNumber >= 960  && vehicleNumber <= 979 ) { className += ' textMarker--foamerBus textMarker--foamerBus--901series'; }
+            else if (vehicleNumber >= 983  && vehicleNumber <= 999 ) { className += ' textMarker--foamerBus textMarker--foamerBus--901series'; }
             else {
-                className += ' textMarker--novelForBusFans';
+                className += ' textMarker--foamerBus textMarker--foamerBus--Unknown';
             }
         }
+        if (/x$/i.test(vehicle.routeId)) {
+            className += ' textMarker--express';
+        }
+        if (vehicle.routeId === '10') {
+            className += ' textMarker--rapidTarc';
+        }
         return className;
-    }
+    },
 
 });
 

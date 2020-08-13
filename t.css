@@ -79,25 +79,19 @@ body {
 	font-family: "Helvetica", "Arial", sans-serif;
 	font-weight: bold;
 }
-.textMarker--whiteOnBlue {
-    background-color: blue;
-}
-.textMarker--yellowOnRed {
-    background-color: red;
-    color: yellow;
-}
-.textMarker--express {
+
+html:not(.tarcTrackerFoamerMode) .textMarker--express {
     background-color: yellow;
     color: black;
     font-weight: normal;
     border: 1px solid black;
 }
-.textMarker--rapidTarc {
+html:not(.tarcTrackerFoamerMode) .textMarker--rapidTarc {
     background-color: #54c6f0;
     color: black;
     border: 1px solid black;
 }
-.textMarker--novelForBusFans {
+html.tarcTrackerFoamerMode .textMarker--foamerBus {
     background-color: red;
     color: yellow;
 }
