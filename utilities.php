@@ -1,7 +1,9 @@
 <?php
+
 function chomp($string) {
     return preg_replace('/\\R\\z/', '', $string);
 }
+
 function indent_string($string, $prefix, $prefix2 = null) {
     if ($prefix2 === null) {
         $string = preg_replace('/^/m', $prefix, $string);
@@ -16,14 +18,17 @@ function indent_string($string, $prefix, $prefix2 = null) {
     $string = chomp($string) . "\n";
     return $string;
 }
+
 function is_rapid_tarc_vehicle($vehicle) {
     $vehicle = intval($vehicle);
     return ($vehicle === 1370 || $vehicle >= 1920 && $vehicle <= 1928);
 }
+
 function is_unknown_vehicle($vehicle) {
     $vehicle = intval($vehicle);
     return !is_known_vehicle($vehicle) && !is_new_vehicle($vehicle);
 }
+
 function is_known_vehicle($vehicle) {
     $vehicle = intval($vehicle);
     return (($vehicle >= 1 && $vehicle <= 10) || // 35' Proterra
@@ -48,8 +53,80 @@ function is_known_vehicle($vehicle) {
             ($vehicle === 1630) || // Hybrid
             ($vehicle >= 1701 && $vehicle <= 1702) || // 35-footers
             ($vehicle >= 1901 && $vehicle <= 1910) ||
-            ($vehicle >= 1921 && $vehicle <= 1928));
+            ($vehicle >= 1920 && $vehicle <= 1928));
 }
+
+$fakeMapping = [];
+
+function add_fake_mapping($realRanges, $fakeRanges) {
+    global $fakeMapping;
+    $realBuses = [];
+    $fakeBuses = [];
+    foreach ($realRanges as $realRange) {
+        $low = $realRange[0];
+        $high = count($realRange) >= 2 ? $realRange[1] : $realRange[0];
+        for ($i = $low; $i <= $high; $i += 1) {
+            $realBuses[] = $i;
+        }
+    }
+    foreach ($fakeRanges as $fakeRange) {
+        $low = $fakeRange[0];
+        $high = count($fakeRange) >= 2 ? $fakeRange[1] : $fakeRange[0];
+        for ($i = $low; $i <= $high; $i += 1) {
+            $fakeBuses[] = $i;
+        }
+    }
+    while (count($realBuses) && count($fakeBuses)) {
+        $real = array_pop($realBuses);
+        $fake = array_pop($fakeBuses);
+        $fakeMapping[$real] = $fake;
+    }
+}
+
+add_fake_mapping([[1350, 1354],
+                  [2001, 2012],
+                  [2101, 2111],
+                  [2301, 2320],
+                  [2401, 2405],
+                  [1355, 1359],
+                  [2501, 2516],
+                  [2701, 2704],
+                  [2801, 2806],
+                  [2901, 2903],
+                  [2910, 2926],
+                  [1360, 1364],
+                  [1001, 1009],
+                  [1301, 1316],
+                  [1320, 1330],
+                  [1365, 1369],
+                  [1401, 1412],
+                  [1601, 1625],
+                  [1630, 1630],
+                  [12, 17],
+                  [1901, 1910],
+                  [1701, 1702],
+                  [2720, 2726]],
+                 [[300, 336],
+                  [350, 365],
+                  [500, 556],
+                  [600, 651],
+                  [700, 761],
+                  [800, 837]]);
+
+add_fake_mapping([[1370, 1370], [1920, 1928]],
+                 [[400, 402], [404, 406], [408, 414]]);
+add_fake_mapping([[2250, 2266], [2930, 2932]],
+                 [[1, 21], [100, 118]]);
+
+function fake_bus($vehicle) {
+    global $fakeMapping;
+    $vehicle = intval($vehicle);
+    if (array_key_exists($vehicle, $fakeMapping)) {
+        return $fakeMapping[$vehicle];
+    }
+    return $vehicle;
+}
+
 function is_new_vehicle($vehicle) {
     $vehicle = intval($vehicle);
     return (
