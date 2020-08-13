@@ -122,7 +122,6 @@ function compactify($json) {
         } else {
             break;
         }
-        error_log(strlen($json) . ' => ' . strlen($result));
     }
     if ($blah === '') {
         return $result;
