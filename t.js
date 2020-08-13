@@ -142,7 +142,7 @@ Object.assign(WhereIsMyBus.prototype, {
         var timestamp = entity.vehicle.timestamp;
         var tripId = entity.vehicle.trip.trip_id;
 
-        var routeDisplayed = routeId.replace(/^0+(?=[^0])/, '');
+        var routeDisplayed = routeId.replace(/^0+(?=[^0])/, '').replace(/x$/i, '');
         var vehicleIdDisplayed = vehicleId.replace(/^0+(?=[^0])/, '');
 
         var vehicle = {
@@ -394,8 +394,8 @@ Object.assign(WhereIsMyBus.prototype, {
             else if (vehicleNumber === 1630)                         { }
             else if (vehicleNumber >= 1701 && vehicleNumber <= 1702) { } /* 35-footers */
             else if (vehicleNumber >= 1901 && vehicleNumber <= 1910) { }
-            else if (vehicleNumber === 1370)                         { className += ' textMarker--foamerBus textMarker--foamerBus--rapidTarc'; }
-            else if (vehicleNumber >= 1920 && vehicleNumber <= 1928) { className += ' textMarker--foamerBus textMarker--foamerBus--rapidTarc'; }
+            else if (vehicleNumber === 1370)                         { className += ' textMarker--rapidTarc'; }
+            else if (vehicleNumber >= 1920 && vehicleNumber <= 1928) { className += ' textMarker--rapidTarc'; }
             else if (vehicleNumber >= 2720 && vehicleNumber <= 2726) { className += ' textMarker--foamerBus textMarker--foamerBus--exCota'; } /* 35-footers */
             else if (vehicleNumber >= 2930 && vehicleNumber <= 2932) { className += ' textMarker--foamerBus textMarker--foamerBus--exCota'; } /* 30-footers */
             else if (vehicleNumber >= 12   && vehicleNumber <= 17  ) { } /* 40-foot electrics */
