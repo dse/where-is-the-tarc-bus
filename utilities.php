@@ -83,6 +83,8 @@ function add_fake_mapping($realRanges, $fakeRanges) {
     }
 }
 
+// BEGIN MAJOR SHITS AND GIGGLES SHIT
+
 add_fake_mapping([[1350, 1354],
                   [2001, 2012],
                   [2101, 2111],
@@ -126,6 +128,8 @@ function fake_bus($vehicle) {
     }
     return $vehicle;
 }
+
+// END MAJOR SHITS AND GIGGLES SHIT
 
 function is_new_vehicle($vehicle) {
     $vehicle = intval($vehicle);
