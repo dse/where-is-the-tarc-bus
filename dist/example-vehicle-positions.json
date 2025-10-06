@@ -1,0 +1,62 @@
+{
+    "Header": {
+        "GtfsRealtimeVersion": "2.0",
+        "incrementality": 0,
+        "Timestamp": 1759724816
+    },
+    "Entities": [{
+        "Id": "2131",
+        "TripUpdate": null,
+        "Vehicle": {
+            "Trip": {
+                "TripId": "t922-b2E699-sl5",
+                "RouteId": "19",
+                "schedule_relationship": 0
+            },
+            "Vehicle": {
+                "Id": "2131",
+                "Label": "2131"
+            },
+            "Position": {
+                "Latitude": 38.2341537,
+                "Longitude": -85.800766,
+                "Bearing": 184.0,
+                "Speed": 1.34112
+            },
+            "CurrentStopSequence": 2970,
+            "StopId": "9690",
+            "CurrentStatus": 1,
+            "Timestamp": 1759724814,
+            "congestion_level": 0,
+            "occupancy_status": 1
+        },
+        "Alert": null
+    }, {
+        "Id": "2149",
+        "TripUpdate": null,
+        "Vehicle": {
+            "Trip": {
+                "TripId": "t92D-b382DB-sl5",
+                "RouteId": "23",
+                "schedule_relationship": 0
+            },
+            "Vehicle": {
+                "Id": "2149",
+                "Label": "2149"
+            },
+            "Position": {
+                "Latitude": 38.2461967,
+                "Longitude": -85.75871,
+                "Bearing": 276.0,
+                "Speed": 4.4704
+            },
+            "CurrentStopSequence": 1860,
+            "StopId": "14960",
+            "CurrentStatus": 1,
+            "Timestamp": 1759724813,
+            "congestion_level": 0,
+            "occupancy_status": 0
+        },
+        "Alert": null
+    }]
+}

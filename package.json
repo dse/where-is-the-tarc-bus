@@ -1,0 +1,23 @@
+{
+  "name": "where-is-the-tarc-bus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dse/where-is-the-tarc-bus.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dse/where-is-the-tarc-bus/issues"
+  },
+  "homepage": "https://github.com/dse/where-is-the-tarc-bus#readme",
+  "dependencies": {
+    "markerwithlabel": "^2.0.2"
+  }
+}

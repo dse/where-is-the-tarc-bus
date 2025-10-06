@@ -1,0 +1,53 @@
+html {
+    margin: 0; padding: 0;
+}
+body {
+    margin: 0; padding: 0;
+    min-height: 100vh;
+}
+.map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+}
+.text-marker {
+    --text-marker-size: 21px; /* [A] see TEXT_MARKER_SIZE in main.js */
+    background-color: black;
+    color: white;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: calc(var(--text-marker-size) * 11/15);
+    line-height: var(--text-marker-size);
+    height: var(--text-marker-size);
+    min-width: var(--text-marker-size);
+    padding-top: 1px;
+    padding-left: 2px;
+    border-radius: 50%;
+    font-family: "Helvetica", "Arial", sans-serif;
+    font-weight: bold;
+    position: relative;
+    z-index: 100;
+}
+.controls {
+    position: fixed;
+    bottom: calc(10px + 1.25rem);
+    left: 10px;
+    z-index: 150;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+}
+.control {
+    appearance: none;
+    border: 1px solid #eee;
+    padding: 0 17px;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 18px;
+    height: 40px;
+    border-radius: 0;
+    background-color: #ffffff;
+}
+.control--enabled {
+    font-weight: bold;
+}

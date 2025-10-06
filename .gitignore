@@ -1,2 +1,4 @@
 .env.php
 vendor
+*_flymake.css
+node_modules/
